@@ -106,7 +106,7 @@ export default class NineMensMorris {
         if (this.#board[dr][dc] !== CellState.EMPTY) {
             throw new Error("This destination is not empty.");
         }
-        let positions = [new Cell(or + 1, oc), new Cell(or - 1, oc), new Cell(or, oc + 1), new Cell(or, oc - 1)];
+        let positions = [new Cell(or + 1 >= this.#ROWS ? 0 : or + 1, oc), new Cell(or - 1 < 0 ? this.#ROWS - 1 : or - 1, oc), new Cell(or, oc + 1 >= this.#COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? this.#ROWS - 1 : oc - 1)];
         if (!positions.some(cell => this.#onBoard(cell) && cell.equals(endCell))) {
             throw new Error("This move is invalid.");
         }
