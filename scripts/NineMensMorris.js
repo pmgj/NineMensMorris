@@ -79,7 +79,7 @@ export default class NineMensMorris {
         if (this.#board[x][y] !== op) {
             throw new Error("This position is not from the opponent.");
         }
-        if(!this.#availablePiecesToRemove(op).find(c => c.equals(cell))) {
+        if (!this.#availablePiecesToRemove(op).find(c => c.equals(cell))) {
             throw new Error("Pieces from a mill can be removed only if no other pieces are available.");
         }
         this.#board[x][y] = CellState.EMPTY;
