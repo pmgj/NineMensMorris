@@ -48,6 +48,25 @@ export default class NineMensMorris {
             this.#state = "move";
         }
     }
+    #availablePiecesToRemove(cellState) {
+        let mills = [], noMills = [];
+        for (let i = 0; i < this.#ROWS; i++) {
+            for (let j = 0; j < this.#COLS; j++) {
+                let cell = new Cell(i, j);
+                if (this.#board[i][j] === cellState) {
+                    if (this.#checkMill(cell)) {
+                        mills.push(cell);
+                    } else {
+                        noMills.push(cell);
+                    }
+                }
+            }
+        }
+        if (noMills.length > 0) {
+            return noMills;
+        }
+        return mills;
+    }
     removePiece(cell) {
         if (this.#state !== "removePiece") {
             throw new Error(`Removing a piece now is invalid (current state: ${this.#state}).`);
@@ -59,6 +78,9 @@ export default class NineMensMorris {
         let op = this.#turn === Player.PLAYER1 ? CellState.PLAYER2 : CellState.PLAYER1;
         if (this.#board[x][y] !== op) {
             throw new Error("This position is not from the opponent.");
+        }
+        if(!this.#availablePiecesToRemove(op).find(c => c.equals(cell))) {
+            throw new Error("Pieces from a mill can be removed only if no other pieces are available.");
         }
         this.#board[x][y] = CellState.EMPTY;
         this.#turn = this.#turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
@@ -145,7 +167,7 @@ export default class NineMensMorris {
     #playerCanMove(cellState) {
         for (let i = 0; i < this.#ROWS; i++) {
             for (let j = 0; j < this.#COLS; j++) {
-                if(this.#board[i][j] === cellState && this.#canMove(new Cell(i, j))) {
+                if (this.#board[i][j] === cellState && this.#canMove(new Cell(i, j))) {
                     return true;
                 }
             }
@@ -159,10 +181,10 @@ export default class NineMensMorris {
         if (this.#countRemainingPieces(CellState.PLAYER2).length < 3) {
             return Winner.PLAYER1;
         }
-        if(!this.#playerCanMove(CellState.PLAYER1)) {
+        if (!this.#playerCanMove(CellState.PLAYER1)) {
             return Winner.PLAYER2;
         }
-        if(!this.#playerCanMove(CellState.PLAYER2)) {
+        if (!this.#playerCanMove(CellState.PLAYER2)) {
             return Winner.PLAYER1;
         }
         return Winner.NONE;

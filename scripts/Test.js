@@ -63,6 +63,12 @@ try {
 } catch (ex) {
 
 }
+try {
+    m.removePiece(new Cell(0, 0));
+    console.assert(true, "Moving incorrect.");
+} catch (ex) {
+
+}
 m.removePiece(new Cell(2, 5));
 try {
     m.move(new Cell(0, 0), new Cell(1, 0));
