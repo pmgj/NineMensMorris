@@ -1,8 +1,13 @@
+h1, p {
+    text-align: center;
+}
+
 main {
     text-align: center;
     position: relative;
 }
 
-img {
+img:not(:first-child) {
     position: absolute;
+    transition: translate 1s;
 }

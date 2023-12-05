@@ -20,13 +20,16 @@ export default class NineMensMorris {
         this.#COLS = 8;
         this.#turn = Player.PLAYER1;
         this.#state = "position";
-        this.#remainingPieces = 18;
+        this.#remainingPieces = 8;
     }
     getState() {
         return this.#state;
     }
     getTurn() {
         return this.#turn;
+    }
+    getBoard() {
+        return this.#board;
     }
     #onBoard({ x, y }) {
         let inLimit = (value, limit) => value >= 0 && value < limit;
@@ -162,7 +165,7 @@ export default class NineMensMorris {
             positions.push(new Cell(or + 1 >= this.#ROWS ? 0 : or + 1, oc));
             positions.push(new Cell(or - 1 < 0 ? this.#ROWS - 1 : or - 1, oc));
         }
-        if (!positions.some(cell => this.#onBoard(cell) && this.#board[cell.x][cell.y] === CellState.EMPTY)) {
+        if (positions.some(c => this.#onBoard(c) && this.#board[c.x][c.y] === CellState.EMPTY)) {
             return true;
         }
         return false;
@@ -187,7 +190,7 @@ export default class NineMensMorris {
         if (this.#countRemainingPieces(CellState.PLAYER1) < 3) {
             return Winner.PLAYER2;
         }
-        if (this.#countRemainingPieces(CellState.PLAYER2).length < 3) {
+        if (this.#countRemainingPieces(CellState.PLAYER2) < 3) {
             return Winner.PLAYER1;
         }
         if (!this.#playerCanMove(CellState.PLAYER1)) {
