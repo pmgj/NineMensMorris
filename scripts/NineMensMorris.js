@@ -22,6 +22,12 @@ export default class NineMensMorris {
         this.#state = "position";
         this.#remainingPieces = 18;
     }
+    getState() {
+        return this.#state;
+    }
+    getTurn() {
+        return this.#turn;
+    }
     #onBoard({ x, y }) {
         let inLimit = (value, limit) => value >= 0 && value < limit;
         return inLimit(x, this.#ROWS) && inLimit(y, this.#COLS);
@@ -89,13 +95,13 @@ export default class NineMensMorris {
     }
     #checkMill(cell) {
         let { x, y } = cell;
+        let front = this.#board[x].slice(y % 2 === 0 ? y : y - 1, y % 2 === 0 ? y + 3 : y + 2);
+        let back = this.#board[x].slice(0, Math.abs(front.length - 3));
+        let positions = [...front, ...back];
+        if (positions.every(cs => this.#board[x][y] === cs)) {
+            return true;
+        }
         if (y % 2 === 0) {
-            let front = this.#board[x].slice(y, y + 3);
-            let back = this.#board[x].slice(0, front.length - 3);
-            let positions = [...front, ...back];
-            if (positions.every(cs => this.#board[x][y] === cs)) {
-                return true;
-            }
             if (y >= 2) {
                 positions = this.#board[x].slice(y - 2, y + 1);
             } else {
@@ -106,11 +112,11 @@ export default class NineMensMorris {
             if (positions.every(cs => this.#board[x][y] === cs)) {
                 return true;
             }
-            return false;
-        }
-        let positions = [new Cell(0, y), new Cell(1, y), new Cell(2, y)];
-        if (positions.every(({ x: row, y: col }) => this.#board[row][col] === this.#board[x][y])) {
-            return true;
+        } else {
+            let positions = [new Cell(0, y), new Cell(1, y), new Cell(2, y)];
+            if (positions.every(({ x: row, y: col }) => this.#board[row][col] === this.#board[x][y])) {
+                return true;
+            }
         }
         return false;
     }
@@ -175,6 +181,9 @@ export default class NineMensMorris {
         return false;
     }
     #isGameOver() {
+        if(this.#remainingPieces > 0) {
+            return Winner.NONE;
+        }
         if (this.#countRemainingPieces(CellState.PLAYER1) < 3) {
             return Winner.PLAYER2;
         }
