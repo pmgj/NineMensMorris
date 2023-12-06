@@ -22,70 +22,79 @@ class GUI {
         return Math.sqrt(Math.pow(ox - dx, 2) + Math.pow(oy - dy, 2));
     }
     #play(event) {
+        let winner;
         try {
             let clickedCell = new Cell(event.offsetX, event.offsetY);
             let index = this.#points.flat().findIndex(cell => this.#distance(cell, clickedCell) < 20);
             if (index === -1) return;
             let cell = new Cell(Math.floor(index / this.#COLS), index % this.#COLS);
-            this.#innerPlay(cell, clickedCell);
-        } catch (ex) {
-            this.#setMessage(`Erro: ${ex.message}`);
-            this.#lastPiece = null;
-            console.table(this.#game.getBoard());
-        }
-    }
-    #innerPlay(cell, clickedCell) {
-        let winner;
-        switch (this.#game.getState()) {
-            case "position":
-                let turn = this.#game.getTurn();
-                this.#game.position(cell);
-                let img = document.createElement("img");
-                img.src = `../images/${turn}.svg`;
-                let pointCell = this.#points.flat().find(cell => this.#distance(cell, clickedCell) < 20);
-                img.style.translate = `${pointCell.x - 310}px ${pointCell.y - 10}px`;
-                img.dataset.pointX = cell.x;
-                img.dataset.pointY = cell.y;
-                img.onclick = () => {
-                    this.#innerPlay(new Cell(parseInt(img.dataset.pointX), parseInt(img.dataset.pointY)));
-                };
-                let main = document.querySelector("main");
-                main.appendChild(img);
-                break;
-            case "removePiece":
-                winner = this.#game.removePiece(cell);
-                let imgToRemove = this.#getImage(cell);
-                imgToRemove.parentElement.removeChild(imgToRemove);
-                break;
-            case "move":
-                if (this.#lastPiece === null) {
-                    this.#lastPiece = cell;
-                } else {
+            switch (this.#game.getState()) {
+                case "position":
+                    let turn = this.#game.getTurn();
+                    this.#game.position(cell);
+                    let img = document.createElement("img");
+                    img.src = `../images/${turn}.svg`;
+                    let pointCell = this.#points.flat().find(c => this.#distance(c, clickedCell) < 20);
+                    img.style.translate = `${pointCell.x - 310}px ${pointCell.y - 10}px`;
+                    img.dataset.pointX = cell.x;
+                    img.dataset.pointY = cell.y;
+                    img.onclick = () => this.#play2(new Cell(parseInt(img.dataset.pointX), parseInt(img.dataset.pointY)));
+                    let main = document.querySelector("main");
+                    main.appendChild(img);
+                    break;
+                case "removePiece":
+                    console.log("Invalid move.");
+                    break;
+                case "move":
                     winner = this.#game.move(this.#lastPiece, cell);
                     let imgToMove = this.#getImage(this.#lastPiece);
                     let cellToMove = this.#points[cell.x][cell.y];
                     imgToMove.style.translate = `${cellToMove.x - 310}px ${cellToMove.y - 10}px`;
                     imgToMove.dataset.pointX = cell.x;
                     imgToMove.dataset.pointY = cell.y;
-                    this.#lastPiece = null;
-                }
-                break;
+                    break;
+            }
+        } catch (ex) {
+            this.#setMessage(`Erro: ${ex.message}`);
+        } finally {
+            this.#lastPiece = null;
+        }
+        this.#showMessage(winner);
+    }
+    #play2(cell) {
+        let winner;
+        try {
+            switch (this.#game.getState()) {
+                case "position":
+                    console.log("Can't position a piece here.");
+                    break;
+                case "removePiece":
+                    winner = this.#game.removePiece(cell);
+                    let imgToRemove = this.#getImage(cell);
+                    imgToRemove.parentElement.removeChild(imgToRemove);
+                    break;
+                case "move":
+                    this.#lastPiece = cell;
+                    break;
+            }
+        } catch (ex) {
+            this.#setMessage(`Erro: ${ex.message}`);
         }
         this.#showMessage(winner);
     }
     #showMessage(winner) {
         switch (winner) {
             case Winner.PLAYER1:
-                this.#setMessage("Game over! Player 1 win!");
+                this.#setMessage("Game over! White's win!");
                 break;
             case Winner.PLAYER2:
-                this.#setMessage("Game over! Player 2 win!");
+                this.#setMessage("Game over! Black's win!");
                 break;
             case Winner.DRAW:
                 this.#setMessage("Game over! It's a draw!");
                 break;
             default:
-                this.#setMessage(this.#game.getTurn() === Player.PLAYER1 ? "Player 1 turn." : "Player 2 turn");
+                this.#setMessage(this.#game.getTurn() === Player.PLAYER1 ? "White's turn." : "Black's turn");
                 break;
         }
     }

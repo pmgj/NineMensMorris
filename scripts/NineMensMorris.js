@@ -20,7 +20,7 @@ export default class NineMensMorris {
         this.#COLS = 8;
         this.#turn = Player.PLAYER1;
         this.#state = "position";
-        this.#remainingPieces = 8;
+        this.#remainingPieces = 18;
     }
     getState() {
         return this.#state;
