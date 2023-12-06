@@ -29,7 +29,7 @@ class GUI {
             let cell = new Cell(Math.floor(index / this.#COLS), index % this.#COLS);
             this.#innerPlay(cell, clickedCell);
         } catch (ex) {
-            this.#setMessage(ex.message);
+            this.#setMessage(`Erro: ${ex.message}`);
             this.#lastPiece = null;
             console.table(this.#game.getBoard());
         }
@@ -54,32 +54,26 @@ class GUI {
                 break;
             case "removePiece":
                 winner = this.#game.removePiece(cell);
-                this.#gameOver(winner);
                 let imgToRemove = this.#getImage(cell);
                 imgToRemove.parentElement.removeChild(imgToRemove);
-                console.log();
                 break;
             case "move":
                 if (this.#lastPiece === null) {
                     this.#lastPiece = cell;
                 } else {
                     winner = this.#game.move(this.#lastPiece, cell);
-                    this.#gameOver(winner);
                     let imgToMove = this.#getImage(this.#lastPiece);
                     let cellToMove = this.#points[cell.x][cell.y];
                     imgToMove.style.translate = `${cellToMove.x - 310}px ${cellToMove.y - 10}px`;
-                    imgToMove.dataset.pointX = cellToMove.x;
-                    imgToMove.dataset.pointY = cellToMove.y;
+                    imgToMove.dataset.pointX = cell.x;
+                    imgToMove.dataset.pointY = cell.y;
                     this.#lastPiece = null;
                 }
                 break;
         }
-        this.#setMessage(this.#game.getTurn() === Player.PLAYER1 ? "Player 1 turn." : "Player 2 turn");
+        this.#showMessage(winner);
     }
-    #getImage(cell) {
-        return document.querySelector(`img[data-point-x="${cell.x}"][data-point-y="${cell.y}"]`);
-    }
-    #gameOver(winner) {
+    #showMessage(winner) {
         switch (winner) {
             case Winner.PLAYER1:
                 this.#setMessage("Game over! Player 1 win!");
@@ -91,9 +85,12 @@ class GUI {
                 this.#setMessage("Game over! It's a draw!");
                 break;
             default:
-                this.#setMessage("");
+                this.#setMessage(this.#game.getTurn() === Player.PLAYER1 ? "Player 1 turn." : "Player 2 turn");
                 break;
         }
+    }
+    #getImage(cell) {
+        return document.querySelector(`img[data-point-x="${cell.x}"][data-point-y="${cell.y}"]`);
     }
     #setMessage(msg) {
         let message = document.querySelector("#message");
@@ -102,6 +99,7 @@ class GUI {
     registerEvents() {
         let board = document.querySelector("main img");
         board.onclick = this.#play.bind(this);
+        this.#showMessage();
     }
 }
 let gui = new GUI();
