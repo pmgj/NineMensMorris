@@ -33,7 +33,7 @@ class GUI {
                     let turn = this.#game.getTurn();
                     this.#game.position(cell);
                     let img = document.createElement("img");
-                    img.src = `../images/${turn}.svg`;
+                    img.src = `./images/${turn}.svg`;
                     let pointCell = this.#points.flat().find(c => this.#distance(c, clickedCell) < 20);
                     img.style.translate = `${pointCell.x - 310}px ${pointCell.y - 10}px`;
                     img.dataset.pointX = cell.x;
