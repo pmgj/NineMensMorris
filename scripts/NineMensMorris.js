@@ -94,7 +94,7 @@ export default class NineMensMorris {
         this.#board[x][y] = CellState.EMPTY;
         this.#turn = this.#turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         this.#state = this.#remainingPieces === 0 ? "move" : "position";
-        return this.#isGameOver();
+        return this.isGameOver();
     }
     #checkMill(cell) {
         let { x, y } = cell;
@@ -156,7 +156,7 @@ export default class NineMensMorris {
             return;
         }
         this.#turn = this.#turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
-        return this.#isGameOver();
+        return this.isGameOver();
     }
     #canMove(cell) {
         let { x: or, y: oc } = cell;
@@ -183,7 +183,7 @@ export default class NineMensMorris {
         }
         return false;
     }
-    #isGameOver() {
+    isGameOver() {
         if(this.#remainingPieces > 0) {
             return Winner.NONE;
         }

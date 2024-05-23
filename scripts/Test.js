@@ -177,4 +177,5 @@ function test2() {
         [0, CellState.PLAYER1, 0, 0, 0, 0, 0, 0]
     ], new Cell(0, 3)), "Erro");
 }
+test1();
 test2();
