@@ -23,7 +23,7 @@ export default class NineMensMorris {
         this.#remainingPieces = 18;
     }
     getState() {
-        return this.#state;
+        return this.#state === "position" ? "position" : (this.#state === "move" && this.#countRemainingPieces(CellState.PLAYER1) > 3 && this.#countRemainingPieces(CellState.PLAYER2) > 3) ? "move" : "flying";
     }
     getTurn() {
         return this.#turn;
@@ -184,7 +184,7 @@ export default class NineMensMorris {
         return false;
     }
     isGameOver() {
-        if(this.#remainingPieces > 0) {
+        if (this.#remainingPieces > 0) {
             return Winner.NONE;
         }
         if (this.#countRemainingPieces(CellState.PLAYER1) < 3) {

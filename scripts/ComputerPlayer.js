@@ -1,3 +1,5 @@
+// Based on: https://kartikkukreja.wordpress.com/2014/03/17/heuristicevaluation-function-for-nine-mens-morris/
+
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
 import NineMensMorris from "./NineMensMorris.js";
@@ -18,31 +20,35 @@ export default class ComputerPlayer {
     alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity, maximizingPlayer = CellState.PLAYER2) {
         let w = this.#game.isGameOver();
         if (depth === 0 || w !== Winner.NONE) {
-            return this.heuristic(node);
+            return { score: this.heuristic(node) };
         }
         let nextPlayer = this.#getOpponent(maximizingPlayer);
         if (maximizingPlayer === this.#player) {
             let value = -Infinity;
             let childs = this.getAvailableMoves(node, maximizingPlayer);
             for (let child of childs) {
-                value = max(value, this.alphabeta(child, depth - 1, alfa, beta, nextPlayer));
+                child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
+                value = Math.max(value, child.score);
                 if (value > beta) {
                     break; /* β cutoff */
                 }
                 alfa = Math.max(alfa, value);
             }
-            return value;
+            let index = childs.reduce((iMax, x, i, arr) => x.score > arr[iMax].score ? i : iMax, 0);
+            return childs[index];
         } else {
-            value = Infinity;
+            let value = Infinity;
             let childs = this.getAvailableMoves(node, maximizingPlayer);
             for (let child of childs) {
-                value = Math.min(value, alphabeta(child, depth - 1, alfa, beta, nextPlayer));
+                child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
+                value = Math.min(value, child.score);
                 if (value < alfa) {
                     break; /* α cutoff */
                 }
                 beta = Math.min(beta, value);
             }
-            return value;
+            let index = childs.reduce((iMax, x, i, arr) => x.score < arr[iMax].score ? i : iMax, 0);
+            return childs[index];
         }
     }
     #onBoard({ x, y }) {
@@ -107,7 +113,6 @@ export default class ComputerPlayer {
                 return poss;
             };
             possibilities = possibilities.concat(orthPoss());
-            console.log(possibilities);
             return possibilities;
         };
         let possibilities = possibleMorris();
@@ -197,7 +202,20 @@ export default class ComputerPlayer {
         let v5 = numberOfTwoPieceConfigurations();
         let v7 = doubleMorris();
         let v8 = winningConfiguration();
-        console.log(v1, v2, v3, v4, v5, v7, v8);
+        let h = 0;
+        switch (this.#game.getState()) {
+            case "position":
+                h = 18 * v1 + 26 * v2 + 1 * v3 + 9 * v4 + 10 * v5; // + 7 * numberOfThreePieceConfigurations();
+                break;
+            case "move":
+                h = 14 * v1 + 43 * v2 + 10 * v3 + 11 * v4 + 8 * v7 + 1086 * v8;
+                break;
+            case "flying":
+                h = 16 * v1 + 10 * v5 + 1190 * v8; // + 1 * numberOfThreePieceConfigurations();
+                break;
+        }
+        console.log(v1, v2, v3, v4, v5, v7, v8, h);
+        return h;
     }
     getAvailableMoves(matrix, turn) {
         let moves = [];
@@ -217,9 +235,10 @@ export default class ComputerPlayer {
 }
 let nmm = new NineMensMorris();
 nmm.position(new Cell(0, 0));
-nmm.position(new Cell(1, 0));
-nmm.position(new Cell(0, 1));
-nmm.position(new Cell(1, 1));
-nmm.position(new Cell(0, 2));
+// nmm.position(new Cell(1, 0));
+// nmm.position(new Cell(0, 1));
+// nmm.position(new Cell(1, 1));
+// nmm.position(new Cell(0, 2));
 let cp = new ComputerPlayer(CellState.PLAYER2, nmm);
-cp.heuristic({ matrix: nmm.getBoard(), cell: new Cell(0, 2) });
+let obj = cp.alphabeta(nmm.getBoard());
+console.log(obj);
