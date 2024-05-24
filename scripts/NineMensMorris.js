@@ -22,8 +22,16 @@ export default class NineMensMorris {
         this.#state = "position";
         this.#remainingPieces = 18;
     }
+    clone() {
+        let temp = new NineMensMorris();
+        temp.#board = this.#board.map(arr => arr.slice());
+        temp.#turn = this.#turn;
+        temp.#state = this.#state;
+        temp.#remainingPieces = this.#remainingPieces;
+        return temp;
+    }
     getState() {
-        return this.#state === "position" ? "position" : (this.#state === "move" && this.#countRemainingPieces(CellState.PLAYER1) > 3 && this.#countRemainingPieces(CellState.PLAYER2) > 3) ? "move" : "flying";
+        return this.#state === "position" ? "position" : (this.#state === "move" && this.countRemainingPieces(CellState.PLAYER1) > 3 && this.countRemainingPieces(CellState.PLAYER2) > 3) ? "move" : "flying";
     }
     getTurn() {
         return this.#turn;
@@ -139,7 +147,7 @@ export default class NineMensMorris {
         if (this.#board[dr][dc] !== CellState.EMPTY) {
             throw new Error("This destination is not empty.");
         }
-        if (this.#countRemainingPieces(piece) > 3) {
+        if (this.countRemainingPieces(piece) > 3) {
             let positions = [new Cell(or, oc + 1 >= this.#COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? this.#COLS - 1 : oc - 1)];
             if (oc % 2 !== 0) {
                 positions.push(new Cell(or + 1 >= this.#ROWS ? 0 : or + 1, oc));
@@ -170,10 +178,10 @@ export default class NineMensMorris {
         }
         return false;
     }
-    #countRemainingPieces(cellState) {
+    countRemainingPieces(cellState) {
         return this.#board.flat().filter(cs => cs === cellState).length;
     }
-    #playerCanMove(cellState) {
+    playerCanMove(cellState) {
         for (let i = 0; i < this.#ROWS; i++) {
             for (let j = 0; j < this.#COLS; j++) {
                 if (this.#board[i][j] === cellState && this.#canMove(new Cell(i, j))) {
@@ -187,16 +195,16 @@ export default class NineMensMorris {
         if (this.#remainingPieces > 0) {
             return Winner.NONE;
         }
-        if (this.#countRemainingPieces(CellState.PLAYER1) < 3) {
+        if (this.countRemainingPieces(CellState.PLAYER1) < 3) {
             return Winner.PLAYER2;
         }
-        if (this.#countRemainingPieces(CellState.PLAYER2) < 3) {
+        if (this.countRemainingPieces(CellState.PLAYER2) < 3) {
             return Winner.PLAYER1;
         }
-        if (!this.#playerCanMove(CellState.PLAYER1)) {
+        if (!this.playerCanMove(CellState.PLAYER1)) {
             return Winner.PLAYER2;
         }
-        if (!this.#playerCanMove(CellState.PLAYER2)) {
+        if (!this.playerCanMove(CellState.PLAYER2)) {
             return Winner.PLAYER1;
         }
         return Winner.NONE;

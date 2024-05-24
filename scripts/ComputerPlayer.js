@@ -8,17 +8,15 @@ import Winner from "./Winner.js";
 export default class ComputerPlayer {
     #player;
     #opponent;
-    #game;
-    constructor(player, game) {
+    constructor(player) {
         this.#player = player;
         this.#opponent = this.#getOpponent(player);
-        this.#game = game;
     }
     #getOpponent(player) {
         return player === CellState.PLAYER1 ? CellState.PLAYER2 : CellState.PLAYER1;
     }
     alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity, maximizingPlayer = CellState.PLAYER2) {
-        let w = this.#game.isGameOver();
+        let w = node.game.isGameOver();
         if (depth === 0 || w !== Winner.NONE) {
             return { score: this.heuristic(node) };
         }
@@ -51,34 +49,9 @@ export default class ComputerPlayer {
             return childs[index];
         }
     }
-    #onBoard({ x, y }) {
-        let inLimit = (value, limit) => value >= 0 && value < limit;
-        return inLimit(x, this.board.length) && inLimit(y, this.board[0].length);
-    }
-    #canMove(cell) {
-        let { x: or, y: oc } = cell;
-        let positions = [new Cell(or, oc + 1 >= this.board[0].length ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? this.board[0].length - 1 : oc - 1)];
-        if (oc % 2 !== 0) {
-            positions.push(new Cell(or + 1 >= this.board.length ? 0 : or + 1, oc));
-            positions.push(new Cell(or - 1 < 0 ? this.board.length - 1 : or - 1, oc));
-        }
-        if (positions.some(c => this.#onBoard(c) && this.board[c.x][c.y] === CellState.EMPTY)) {
-            return true;
-        }
-        return false;
-    }
-    playerCanMove(player) {
-        for (let i = 0; i < this.board.length; i++) {
-            for (let j = 0; j < this.board[i].length; j++) {
-                if (this.board[i][j] === player && this.#canMove(new Cell(i, j))) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
     heuristic(node) {
-        let { matrix: board, cell } = node;
+        let { game, cell } = node;
+        let board = game.getBoard();
         let possibleMorris = () => {
             let rowPoss = () => {
                 let poss = [];
@@ -146,8 +119,7 @@ export default class ComputerPlayer {
             };
             return numberOfBlockedPieces(this.#opponent) - numberOfBlockedPieces(this.#player);
         };
-        let countRemainingPieces = player => board.flat().filter(cs => cs === player).length;
-        let numberOfPieces = () => countRemainingPieces(this.#player) - countRemainingPieces(this.#opponent);
+        let numberOfPieces = () => game.countRemainingPieces(this.#player) - game.countRemainingPieces(this.#opponent);
         let numberOfTwoPieceConfigurations = () => {
             let numberOfTwoPiece = player => {
                 let count = 0;
@@ -181,19 +153,8 @@ export default class ComputerPlayer {
             return doubleMorrisByPlayer(this.#player) - doubleMorrisByPlayer(this.#opponent);
         };
         let winningConfiguration = () => {
-            if (countRemainingPieces(this.#player) < 3) {
-                return -1;
-            }
-            if (countRemainingPieces(this.#opponent) < 3) {
-                return 1;
-            }
-            if (!this.playerCanMove(this.#player)) {
-                return -1;
-            }
-            if (!this.playerCanMove(this.#opponent)) {
-                return 1;
-            }
-            return 0;
+            let w = game.isGameOver();
+            return w === Winner.DRAW || Winner.NONE ? 0 : w === Winner.PLAYER1 && this.#player === CellState.PLAYER1 ? 1 : 0;
         };
         let v1 = closedMorris();
         let v2 = numberOfMorrises();
@@ -203,7 +164,7 @@ export default class ComputerPlayer {
         let v7 = doubleMorris();
         let v8 = winningConfiguration();
         let h = 0;
-        switch (this.#game.getState()) {
+        switch (game.getState()) {
             case "position":
                 h = 18 * v1 + 26 * v2 + 1 * v3 + 9 * v4 + 10 * v5; // + 7 * numberOfThreePieceConfigurations();
                 break;
@@ -214,31 +175,37 @@ export default class ComputerPlayer {
                 h = 16 * v1 + 10 * v5 + 1190 * v8; // + 1 * numberOfThreePieceConfigurations();
                 break;
         }
-        console.log(v1, v2, v3, v4, v5, v7, v8, h);
         return h;
     }
-    getAvailableMoves(matrix, turn) {
+    getAvailableMoves({ game }, turn) {
         let moves = [];
-        if (this.#game.getState() === "position") {
-            for (let i = 0; i < matrix.length; i++) {
-                for (let j = 0; j < matrix[0].length; j++) {
-                    if (matrix[i][j] === CellState.EMPTY) {
-                        let clone = matrix.map(arr => arr.slice());
-                        clone[i][j] = turn;
-                        moves.push({ matrix: clone, cell: new Cell(i, j) });
+        let board = game.getBoard();
+        if (game.getState() === "position") {
+            for (let i = 0; i < board.length; i++) {
+                for (let j = 0; j < board[0].length; j++) {
+                    if (board[i][j] === CellState.EMPTY) {
+                        let clone = game.clone();
+                        let tempBoard = clone.getBoard();
+                        tempBoard[i][j] = turn;
+                        moves.push({ game: clone, cell: new Cell(i, j) });
                     }
                 }
             }
+        } else if (game.getState() === "move") {
+
+        } else if (game.getState() === "flying") {
+        } else {
+            
         }
         return moves;
     }
 }
 let nmm = new NineMensMorris();
 nmm.position(new Cell(0, 0));
-// nmm.position(new Cell(1, 0));
-// nmm.position(new Cell(0, 1));
-// nmm.position(new Cell(1, 1));
-// nmm.position(new Cell(0, 2));
-let cp = new ComputerPlayer(CellState.PLAYER2, nmm);
-let obj = cp.alphabeta(nmm.getBoard());
-console.log(obj);
+let cp = new ComputerPlayer(CellState.PLAYER2);
+let obj = cp.alphabeta({ game: nmm });
+nmm.position(obj.cell);
+nmm.position(new Cell(0, 5));
+obj = cp.alphabeta({ game: nmm });
+nmm.position(obj.cell);
+console.log(nmm);
