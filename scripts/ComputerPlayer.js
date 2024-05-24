@@ -18,7 +18,7 @@ export default class ComputerPlayer {
     alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity, maximizingPlayer = CellState.PLAYER2) {
         let w = node.game.isGameOver();
         if (depth === 0 || w !== Winner.NONE) {
-            return { score: this.heuristic(node) };
+            return { score: this.#heuristic(node) };
         }
         let nextPlayer = this.#getOpponent(maximizingPlayer);
         if (maximizingPlayer === this.#player) {
@@ -49,8 +49,9 @@ export default class ComputerPlayer {
             return childs[index];
         }
     }
-    heuristic(node) {
-        let { game, cell } = node;
+    #heuristic(node) {
+        let { game, beginCell, endCell } = node;
+        let cell = endCell ? endCell : beginCell;
         let board = game.getBoard();
         let possibleMorris = () => {
             let rowPoss = () => {
@@ -180,22 +181,42 @@ export default class ComputerPlayer {
     getAvailableMoves({ game }, turn) {
         let moves = [];
         let board = game.getBoard();
-        if (game.getState() === "position") {
-            for (let i = 0; i < board.length; i++) {
-                for (let j = 0; j < board[0].length; j++) {
-                    if (board[i][j] === CellState.EMPTY) {
-                        let clone = game.clone();
-                        let tempBoard = clone.getBoard();
-                        tempBoard[i][j] = turn;
-                        moves.push({ game: clone, cell: new Cell(i, j) });
+        let poss;
+        let COLS = board[0].length, ROWS = board.length;
+        switch (game.getState()) {
+            case "position":
+                poss = board.flat().map((n, i) => n === CellState.EMPTY ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
+                poss.forEach(c => {
+                    let clone = game.clone();
+                    clone.position(c);
+                    moves.push({ game: clone, beginCell: c });
+                });
+                break;
+            case "move":
+                poss = board.flat().map((n, i) => n === turn ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
+                poss.forEach(c => {
+                    let { x: or, y: oc } = c;
+                    let positions = [new Cell(or, oc + 1 >= COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? COLS - 1 : oc - 1)];
+                    if (oc % 2 !== 0) {
+                        if (board[or + 1]) {
+                            positions.push(new Cell(or + 1, oc));
+                        }
+                        if (board[or - 1]) {
+                            positions.push(new Cell(or - 1, oc));
+                        }
                     }
-                }
-            }
-        } else if (game.getState() === "move") {
-
-        } else if (game.getState() === "flying") {
-        } else {
-            
+                    positions = positions.filter(({ x, y }) => board[x][y] === CellState.EMPTY);
+                    positions.forEach(emptyCell => {
+                        let clone = game.clone();
+                        clone.move(c, emptyCell);
+                        moves.push({ game: clone, beginCell: c, endCell: emptyCell });
+                    });
+                });
+                break;
+            case "flying":
+                break;
+            case "removePiece":
+                break;
         }
         return moves;
     }
@@ -204,8 +225,8 @@ let nmm = new NineMensMorris();
 nmm.position(new Cell(0, 0));
 let cp = new ComputerPlayer(CellState.PLAYER2);
 let obj = cp.alphabeta({ game: nmm });
-nmm.position(obj.cell);
+nmm.position(obj.beginCell);
 nmm.position(new Cell(0, 5));
 obj = cp.alphabeta({ game: nmm });
-nmm.position(obj.cell);
-console.log(nmm);
+nmm.position(obj.beginCell);
+// console.log(nmm);
