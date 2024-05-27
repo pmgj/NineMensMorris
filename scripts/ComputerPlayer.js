@@ -2,6 +2,7 @@
 
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
+import NineMensMorris from "./NineMensMorris.js";
 import Winner from "./Winner.js";
 
 export default class ComputerPlayer {
@@ -17,7 +18,7 @@ export default class ComputerPlayer {
     alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity, maximizingPlayer = CellState.PLAYER2) {
         let w = node.game.isGameOver();
         if (depth === 0 || w !== Winner.NONE) {
-            return { score: this.#heuristic(node) };
+            return { score: this.heuristic(node) };
         }
         let nextPlayer = this.#getOpponent(maximizingPlayer);
         if (maximizingPlayer === this.#player) {
@@ -48,7 +49,7 @@ export default class ComputerPlayer {
             return childs[index];
         }
     }
-    #heuristic(node) {
+    heuristic(node) {
         let { game, beginCell, endCell } = node;
         let cell = endCell ? endCell : beginCell;
         let board = game.getBoard();
@@ -135,6 +136,27 @@ export default class ComputerPlayer {
             return numberOfTwoPiece(this.#player) - numberOfTwoPiece(this.#opponent);
         };
         let numberOfThreePieceConfigurations = () => {
+            let countTwoPieceMorris = player => {
+                let ret = [];
+                for (let poss of possibilities) {
+                    let pieces = poss.filter(obj => obj.value === player).length;
+                    let empty = poss.filter(obj => obj.value === CellState.EMPTY).length;
+                    if (pieces === 2 && empty === 1) {
+                        ret = ret.concat(poss);
+                    }
+                }
+                const uniqueElements = [];
+                const duplicates = [];
+                ret.forEach(item => {
+                    if (uniqueElements.some(v => v.cell.equals(item))) {
+                        duplicates.push(item);
+                    } else {
+                        uniqueElements.push(item);
+                    }
+                });
+                return duplicates.length;
+            };
+            return countTwoPieceMorris(this.#player) - countTwoPieceMorris(this.#opponent);
         };
         let doubleMorris = () => {
             let doubleMorrisByPlayer = player => {
@@ -161,21 +183,23 @@ export default class ComputerPlayer {
         let v3 = numberOfBlockedOpponentPieces();
         let v4 = numberOfPieces();
         let v5 = numberOfTwoPieceConfigurations();
+        let v6 = numberOfThreePieceConfigurations();
         let v7 = doubleMorris();
         let v8 = winningConfiguration();
         let h = 0;
         switch (game.getState()) {
             case "position":
             case "removePiece":
-                h = 18 * v1 + 26 * v2 + 1 * v3 + 9 * v4 + 10 * v5; // + 7 * numberOfThreePieceConfigurations();
+                h = 18 * v1 + 26 * v2 + 1 * v3 + 9 * v4 + 10 * v5 + 7 * v6;
                 break;
             case "move":
                 h = 14 * v1 + 43 * v2 + 10 * v3 + 11 * v4 + 8 * v7 + 1086 * v8;
                 break;
             case "flying":
-                h = 16 * v1 + 10 * v5 + 1190 * v8; // + 1 * numberOfThreePieceConfigurations();
+                h = 16 * v1 + 10 * v5 + 1 * v6 + 1190 * v8;
                 break;
         }
+        console.log(v1, v2, v3, v4, v5, v6, v7, v8, h);
         return h;
     }
     getAvailableMoves({ game }, turn) {

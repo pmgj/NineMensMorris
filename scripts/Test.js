@@ -2,6 +2,7 @@ import NineMensMorris from "./NineMensMorris.js";
 import Cell from "./Cell.js";
 import Winner from "./Winner.js";
 import CellState from "./CellState.js";
+import ComputerPlayer from "./ComputerPlayer.js";
 
 function test1() {
     let m = new NineMensMorris();
@@ -177,5 +178,54 @@ function test2() {
         [0, CellState.PLAYER1, 0, 0, 0, 0, 0, 0]
     ], new Cell(0, 3)), "Erro");
 }
-test1();
-test2();
+function test3() {
+    let nmm = new NineMensMorris();
+    let cp = new ComputerPlayer(CellState.PLAYER2), h;
+    nmm.position(new Cell(0, 0));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(0, 2));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(2, 1));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(1, 2));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(1, 7));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(2, 0));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(0, 4));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(2, 7));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.position(new Cell(2, 5));
+    h = cp.alphabeta({ game: nmm });
+    nmm.position(h.beginCell);
+    nmm.move(new Cell(2, 5), new Cell(2, 4));
+    console.table(nmm.getBoard());
+    h = cp.alphabeta({ game: nmm });
+    nmm.move(h.beginCell, h.endCell);
+    console.table(nmm.getBoard());
+}
+function test4() {
+    let nmm = new NineMensMorris();
+    nmm.position(new Cell(0, 1));
+    nmm.position(new Cell(0, 0));
+    nmm.position(new Cell(1, 1));
+    nmm.position(new Cell(0, 2));
+    nmm.position(new Cell(2, 1));
+    let cp = new ComputerPlayer(CellState.PLAYER2), h;
+    console.table(nmm.getBoard());
+    h = cp.heuristic({ game: nmm, beginCell: new Cell(2, 1) });
+}
+// test1();
+// test2();
+// test3();
+test4();
