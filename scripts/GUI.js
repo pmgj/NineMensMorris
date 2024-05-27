@@ -24,52 +24,49 @@ class GUI {
     #distance({ x: ox, y: oy }, { x: dx, y: dy }) {
         return Math.sqrt(Math.pow(ox - dx, 2) + Math.pow(oy - dy, 2));
     }
-    #play(event) {
-        let innerPlay = cell => {
-            let winner;
-            try {
-                switch (this.#game.getState()) {
-                    case "position":
-                        let turn = this.#game.getTurn();
-                        this.#game.position(cell);
-                        let img = document.createElement("img");
-                        img.src = `./images/${turn}.svg`;
-                        let pointCell = this.#points[cell.x][cell.y];
-                        img.style.translate = `${pointCell.x - 310}px ${pointCell.y - 10}px`;
-                        img.dataset.pointX = cell.x;
-                        img.dataset.pointY = cell.y;
-                        img.onclick = () => this.#play2(new Cell(parseInt(img.dataset.pointX), parseInt(img.dataset.pointY)));
-                        let main = document.querySelector("main");
-                        main.appendChild(img);
-                        break;
-                    case "removePiece":
-                        console.log("Invalid move.");
-                        break;
-                    case "move":
-                        winner = this.#game.move(this.#lastPiece, cell);
-                        let imgToMove = this.#getImage(this.#lastPiece);
-                        let cellToMove = this.#points[cell.x][cell.y];
-                        imgToMove.style.translate = `${cellToMove.x - 310}px ${cellToMove.y - 10}px`;
-                        imgToMove.dataset.pointX = cell.x;
-                        imgToMove.dataset.pointY = cell.y;
-                        break;
-                }
-            } catch (ex) {
-                this.#setMessage(`Erro: ${ex.message}`);
-            } finally {
-                this.#lastPiece = null;
+    #innerPlay(cell) {
+        let winner;
+        try {
+            switch (this.#game.getState()) {
+                case "position":
+                    let turn = this.#game.getTurn();
+                    this.#game.position(cell);
+                    let img = document.createElement("img");
+                    img.src = `./images/${turn}.svg`;
+                    let pointCell = this.#points[cell.x][cell.y];
+                    img.style.translate = `${pointCell.x - 310}px ${pointCell.y - 10}px`;
+                    img.dataset.pointX = cell.x;
+                    img.dataset.pointY = cell.y;
+                    img.onclick = () => this.#play2(new Cell(parseInt(img.dataset.pointX), parseInt(img.dataset.pointY)));
+                    let main = document.querySelector("main");
+                    main.appendChild(img);
+                    break;
+                case "removePiece":
+                    console.log("Invalid move.");
+                    break;
+                case "move":
+                case "flying":
+                    winner = this.#game.move(this.#lastPiece, cell);
+                    let imgToMove = this.#getImage(this.#lastPiece);
+                    let cellToMove = this.#points[cell.x][cell.y];
+                    imgToMove.style.translate = `${cellToMove.x - 310}px ${cellToMove.y - 10}px`;
+                    imgToMove.dataset.pointX = cell.x;
+                    imgToMove.dataset.pointY = cell.y;
+                    break;
             }
-            this.#showMessage(winner);
-        };
+        } catch (ex) {
+            this.#setMessage(`Erro: ${ex.message}`);
+        } finally {
+            this.#lastPiece = null;
+        }
+        this.#showMessage(winner);
+    };
+    #play(event) {
         let clickedCell = new Cell(event.offsetX, event.offsetY);
         let index = this.#points.flat().findIndex(cell => this.#distance(cell, clickedCell) < 20);
         if (index === -1) return;
         let cell = new Cell(Math.floor(index / this.#COLS), index % this.#COLS);
-        innerPlay(cell);
-        if (this.#game.getTurn() === Player.PLAYER2) {
-            let obj = this.#computer.alphabeta({ game: this.#game });
-            innerPlay(obj.beginCell);
-        }
+        this.#innerPlay(cell);
     }
     #removePiece(cell) {
         let winner = this.#game.removePiece(cell);
@@ -109,6 +106,22 @@ class GUI {
                 break;
             default:
                 this.#setMessage(this.#game.getTurn() === Player.PLAYER1 ? "White's turn." : "Black's turn");
+                while (this.#game.getTurn() === Player.PLAYER2) {
+                    let obj = this.#computer.alphabeta({ game: this.#game });
+                    switch (this.#game.getState()) {
+                        case "position":
+                            this.#innerPlay(obj.beginCell);
+                            break;
+                        case "removePiece":
+                            winner = this.#removePiece(obj.beginCell);
+                            break;
+                        case "move":
+                        case "flying":
+                            this.#lastPiece = obj.beginCell;
+                            this.#innerPlay(obj.endCell);
+                            break;
+                    }
+                }
                 break;
         }
     }

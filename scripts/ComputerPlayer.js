@@ -2,7 +2,6 @@
 
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
-import NineMensMorris from "./NineMensMorris.js";
 import Winner from "./Winner.js";
 
 export default class ComputerPlayer {
@@ -167,6 +166,7 @@ export default class ComputerPlayer {
         let h = 0;
         switch (game.getState()) {
             case "position":
+            case "removePiece":
                 h = 18 * v1 + 26 * v2 + 1 * v3 + 9 * v4 + 10 * v5; // + 7 * numberOfThreePieceConfigurations();
                 break;
             case "move":
@@ -214,19 +214,25 @@ export default class ComputerPlayer {
                 });
                 break;
             case "flying":
+                let pieces = board.flat().map((n, i) => n === turn ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
+                poss = board.flat().map((n, i) => n === CellState.EMPTY ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
+                pieces.forEach(p => {
+                    poss.forEach(c => {
+                        let clone = game.clone();
+                        clone.move(p, c);
+                        moves.push({ game: clone, beginCell: p, endCell: c });
+                    });
+                });
                 break;
             case "removePiece":
+                poss = game.availablePiecesToRemove(this.#opponent);
+                poss.forEach(c => {
+                    let clone = game.clone();
+                    clone.removePiece(c);
+                    moves.push({ game: clone, beginCell: c });
+                });
                 break;
         }
         return moves;
     }
 }
-let nmm = new NineMensMorris();
-nmm.position(new Cell(0, 0));
-let cp = new ComputerPlayer(CellState.PLAYER2);
-let obj = cp.alphabeta({ game: nmm });
-nmm.position(obj.beginCell);
-nmm.position(new Cell(0, 5));
-obj = cp.alphabeta({ game: nmm });
-nmm.position(obj.beginCell);
-// console.log(nmm);

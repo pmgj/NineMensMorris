@@ -31,7 +31,16 @@ export default class NineMensMorris {
         return temp;
     }
     getState() {
-        return this.#state === "position" ? "position" : (this.#state === "move" && this.countRemainingPieces(CellState.PLAYER1) > 3 && this.countRemainingPieces(CellState.PLAYER2) > 3) ? "move" : "flying";
+        switch (this.#state) {
+            case "position":
+            case "removePiece":
+                return this.#state;
+            case "move":
+                if (this.countRemainingPieces(CellState.PLAYER1) > 3 && this.countRemainingPieces(CellState.PLAYER2) > 3) {
+                    return this.#state;
+                }
+                return "flying";
+        }
     }
     getTurn() {
         return this.#turn;
@@ -65,7 +74,7 @@ export default class NineMensMorris {
             this.#state = "move";
         }
     }
-    #availablePiecesToRemove(cellState) {
+    availablePiecesToRemove(cellState) {
         let mills = [], noMills = [];
         for (let i = 0; i < this.#ROWS; i++) {
             for (let j = 0; j < this.#COLS; j++) {
@@ -96,7 +105,7 @@ export default class NineMensMorris {
         if (this.#board[x][y] !== op) {
             throw new Error("This position is not from the opponent.");
         }
-        if (!this.#availablePiecesToRemove(op).find(c => c.equals(cell))) {
+        if (!this.availablePiecesToRemove(op).find(c => c.equals(cell))) {
             throw new Error("Pieces from a mill can be removed only if no other pieces are available.");
         }
         this.#board[x][y] = CellState.EMPTY;
