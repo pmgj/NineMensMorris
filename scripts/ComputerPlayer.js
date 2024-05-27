@@ -182,7 +182,7 @@ export default class ComputerPlayer {
         let moves = [];
         let board = game.getBoard();
         let poss;
-        let COLS = board[0].length, ROWS = board.length;
+        let COLS = board[0].length;
         switch (game.getState()) {
             case "position":
                 poss = board.flat().map((n, i) => n === CellState.EMPTY ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);

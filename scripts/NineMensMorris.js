@@ -36,7 +36,7 @@ export default class NineMensMorris {
             case "removePiece":
                 return this.#state;
             case "move":
-                if (this.countRemainingPieces(CellState.PLAYER1) > 3 && this.countRemainingPieces(CellState.PLAYER2) > 3) {
+                if (this.countRemainingPieces(this.#turn === Player.PLAYER1 ? CellState.PLAYER1 : CellState.PLAYER2) > 3) {
                     return this.#state;
                 }
                 return "flying";

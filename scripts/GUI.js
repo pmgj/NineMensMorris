@@ -1,4 +1,5 @@
 import Cell from "./Cell.js";
+import CellState from "./CellState.js";
 import ComputerPlayer from "./ComputerPlayer.js";
 import NineMensMorris from "./NineMensMorris.js";
 import Player from "./Player.js";
@@ -19,7 +20,7 @@ class GUI {
         this.#COLS = 8;
         this.#game = new NineMensMorris();
         this.#lastPiece = null;
-        this.#computer = new ComputerPlayer(Player.PLAYER2);
+        this.#computer = new ComputerPlayer(CellState.PLAYER2);
     }
     #distance({ x: ox, y: oy }, { x: dx, y: dy }) {
         return Math.sqrt(Math.pow(ox - dx, 2) + Math.pow(oy - dy, 2));
