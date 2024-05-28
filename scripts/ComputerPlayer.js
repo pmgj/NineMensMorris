@@ -2,28 +2,25 @@
 
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
-import NineMensMorris from "./NineMensMorris.js";
 import Winner from "./Winner.js";
 
 export default class ComputerPlayer {
     #player;
-    #opponent;
     constructor(player) {
         this.#player = player;
-        this.#opponent = this.#getOpponent(player);
     }
     #getOpponent(player) {
         return player === CellState.PLAYER1 ? CellState.PLAYER2 : CellState.PLAYER1;
     }
     alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity, maximizingPlayer = CellState.PLAYER2) {
         let w = node.game.isGameOver();
-        if (depth === 0 || w !== Winner.NONE) {
-            return { score: this.heuristic(node) };
-        }
         let nextPlayer = this.#getOpponent(maximizingPlayer);
+        if (depth === 0 || w !== Winner.NONE) {
+            return { score: this.heuristic(node, maximizingPlayer, nextPlayer) };
+        }
         if (maximizingPlayer === this.#player) {
             let value = -Infinity;
-            let childs = this.getAvailableMoves(node, maximizingPlayer);
+            let childs = this.getAvailableMoves(node, maximizingPlayer, nextPlayer);
             for (let child of childs) {
                 child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
                 value = Math.max(value, child.score);
@@ -36,7 +33,7 @@ export default class ComputerPlayer {
             return childs[index];
         } else {
             let value = Infinity;
-            let childs = this.getAvailableMoves(node, maximizingPlayer);
+            let childs = this.getAvailableMoves(node, maximizingPlayer, nextPlayer);
             for (let child of childs) {
                 child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
                 value = Math.min(value, child.score);
@@ -49,7 +46,7 @@ export default class ComputerPlayer {
             return childs[index];
         }
     }
-    heuristic(node) {
+    heuristic(node, player, opponent) {
         let { game, beginCell, endCell } = node;
         let cell = endCell ? endCell : beginCell;
         let board = game.getBoard();
@@ -91,41 +88,40 @@ export default class ComputerPlayer {
         };
         let possibilities = possibleMorris();
         let closedMorris = () => {
-            if (possibilities.some(p => p.every(obj => obj.value === this.#player) && p.some(obj => obj.cell.equals(cell)))) {
+            if (possibilities.some(p => p.every(obj => obj.value === player) && p.some(obj => obj.cell.equals(cell)))) {
                 return 1;
             }
-            if (possibilities.some(p => p.every(obj => obj.value === this.#opponent) && p.some(obj => obj.cell.equals(cell)))) {
+            if (possibilities.some(p => p.every(obj => obj.value === opponent) && p.some(obj => obj.cell.equals(cell)))) {
                 return -1;
             }
             return 0;
         };
         let numberOfMorrises = () => {
-            let countMorrises = player => possibilities.filter(p => p.every(obj => obj.value === player)).length;
-            return countMorrises(this.#player) - countMorrises(this.#opponent);
+            let countMorrises = p => possibilities.filter(poss => poss.every(obj => obj.value === p)).length;
+            return countMorrises(player) - countMorrises(opponent);
         };
         let numberOfBlockedOpponentPieces = () => {
-            let numberOfBlockedPieces = player => {
+            let numberOfBlockedPieces = p => {
                 let count = 0;
-                let opponent = this.#getOpponent(player);
                 for (let i = 0; i < board.length; i++) {
                     for (let j = 0; j < board[i].length; j++) {
                         let prev = j - 1 < 0 ? board[i].length - 1 : j - 1;
                         let next = j + 1 >= board[i].length ? 0 : j + 1;
-                        if (board[i][j] === player && board[i][prev] === opponent && board[i][next] === opponent) {
+                        if (board[i][j] === p && board[i][prev] !== CellState.EMPTY && board[i][next] !== CellState.EMPTY) {
                             count++;
                         }
                     }
                 }
                 return count;
             };
-            return numberOfBlockedPieces(this.#opponent) - numberOfBlockedPieces(this.#player);
+            return numberOfBlockedPieces(opponent) - numberOfBlockedPieces(player);
         };
-        let numberOfPieces = () => game.countRemainingPieces(this.#player) - game.countRemainingPieces(this.#opponent);
+        let numberOfPieces = () => game.countRemainingPieces(player) - game.countRemainingPieces(opponent);
         let numberOfTwoPieceConfigurations = () => {
-            let numberOfTwoPiece = player => {
+            let numberOfTwoPiece = p => {
                 let count = 0;
                 for (let poss of possibilities) {
-                    let pieces = poss.filter(obj => obj.value === player).length;
+                    let pieces = poss.filter(obj => obj.value === p).length;
                     let empty = poss.filter(obj => obj.value === CellState.EMPTY).length;
                     if (pieces === 2 && empty === 1) {
                         count++;
@@ -133,34 +129,37 @@ export default class ComputerPlayer {
                 }
                 return count;
             };
-            return numberOfTwoPiece(this.#player) - numberOfTwoPiece(this.#opponent);
+            return numberOfTwoPiece(player) - numberOfTwoPiece(opponent);
+        };
+        let countDuplicates = array => {
+            const uniqueElements = [];
+            const duplicates = [];
+            array.forEach(item => {
+                if (uniqueElements.some(v => v.cell.equals(item.cell))) {
+                    duplicates.push(item);
+                } else {
+                    uniqueElements.push(item);
+                }
+            });
+            return duplicates.length;
         };
         let numberOfThreePieceConfigurations = () => {
-            let countTwoPieceMorris = player => {
+            let countTwoPieceMorris = p => {
                 let ret = [];
                 for (let poss of possibilities) {
-                    let pieces = poss.filter(obj => obj.value === player).length;
+                    let pieces = poss.filter(obj => obj.value === p).length;
                     let empty = poss.filter(obj => obj.value === CellState.EMPTY).length;
                     if (pieces === 2 && empty === 1) {
                         ret = ret.concat(poss);
                     }
                 }
-                const uniqueElements = [];
-                const duplicates = [];
-                ret.forEach(item => {
-                    if (uniqueElements.some(v => v.cell.equals(item))) {
-                        duplicates.push(item);
-                    } else {
-                        uniqueElements.push(item);
-                    }
-                });
-                return duplicates.length;
+                return countDuplicates(ret);
             };
-            return countTwoPieceMorris(this.#player) - countTwoPieceMorris(this.#opponent);
+            return countTwoPieceMorris(player) - countTwoPieceMorris(opponent);
         };
         let doubleMorris = () => {
-            let doubleMorrisByPlayer = player => {
-                let temp = possibilities.map((poss, i) => poss.every(obj => obj.value === player) ? i : -1);
+            let doubleMorrisByPlayer = p => {
+                let temp = possibilities.map((poss, i) => poss.every(obj => obj.value === p) ? i : -1);
                 let indexes = temp.filter(v => v !== -1);
                 let values = indexes.map(i => possibilities[i]);
                 let allCells = values.flat();
@@ -168,15 +167,13 @@ export default class ComputerPlayer {
                 if (countAll === 0) {
                     return 0;
                 }
-                let nonRepeatingCells = new Set(allCells);
-                let countRestricted = nonRepeatingCells.size;
-                return countAll - countRestricted;
+                return countDuplicates(allCells);
             };
-            return doubleMorrisByPlayer(this.#player) - doubleMorrisByPlayer(this.#opponent);
+            return doubleMorrisByPlayer(player) - doubleMorrisByPlayer(opponent);
         };
         let winningConfiguration = () => {
             let w = game.isGameOver();
-            return w === Winner.DRAW || Winner.NONE ? 0 : w === Winner.PLAYER1 && this.#player === CellState.PLAYER1 ? 1 : 0;
+            return w === Winner.DRAW || Winner.NONE ? 0 : w === Winner.PLAYER1 && player === CellState.PLAYER1 ? 1 : -1;
         };
         let v1 = closedMorris();
         let v2 = numberOfMorrises();
@@ -199,10 +196,10 @@ export default class ComputerPlayer {
                 h = 16 * v1 + 10 * v5 + 1 * v6 + 1190 * v8;
                 break;
         }
-        console.log(v1, v2, v3, v4, v5, v6, v7, v8, h);
+        // console.log(`v1 = ${v1}, v2 = ${v2}, v3 = ${v3}, v4 = ${v4}, v5 = ${v5}, v6 = ${v6}, v7 = ${v7}, v8 = ${v8}, h = ${h}`);
         return h;
     }
-    getAvailableMoves({ game }, turn) {
+    getAvailableMoves({ game }, player, opponent) {
         let moves = [];
         let board = game.getBoard();
         let poss;
@@ -217,7 +214,7 @@ export default class ComputerPlayer {
                 });
                 break;
             case "move":
-                poss = board.flat().map((n, i) => n === turn ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
+                poss = board.flat().map((n, i) => n === player ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
                 poss.forEach(c => {
                     let { x: or, y: oc } = c;
                     let positions = [new Cell(or, oc + 1 >= COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? COLS - 1 : oc - 1)];
@@ -238,7 +235,7 @@ export default class ComputerPlayer {
                 });
                 break;
             case "flying":
-                let pieces = board.flat().map((n, i) => n === turn ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
+                let pieces = board.flat().map((n, i) => n === player ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
                 poss = board.flat().map((n, i) => n === CellState.EMPTY ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
                 pieces.forEach(p => {
                     poss.forEach(c => {
@@ -249,7 +246,7 @@ export default class ComputerPlayer {
                 });
                 break;
             case "removePiece":
-                poss = game.availablePiecesToRemove(this.#opponent);
+                poss = game.availablePiecesToRemove(opponent);
                 poss.forEach(c => {
                     let clone = game.clone();
                     clone.removePiece(c);

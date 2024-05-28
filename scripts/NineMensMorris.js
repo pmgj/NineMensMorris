@@ -191,6 +191,9 @@ export default class NineMensMorris {
         return this.#board.flat().filter(cs => cs === cellState).length;
     }
     playerCanMove(cellState) {
+        if (this.countRemainingPieces(cellState) === 3) {
+            return true;
+        }
         for (let i = 0; i < this.#ROWS; i++) {
             for (let j = 0; j < this.#COLS; j++) {
                 if (this.#board[i][j] === cellState && this.#canMove(new Cell(i, j))) {
