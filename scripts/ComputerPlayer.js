@@ -174,7 +174,7 @@ export default class ComputerPlayer {
         };
         let winningConfiguration = () => {
             let w = game.isGameOver();
-            return w === Winner.DRAW || Winner.NONE ? 0 : w === Winner.PLAYER1 && player === CellState.PLAYER1 ? 1 : -1;
+            return w === Winner.DRAW || Winner.NONE ? 0 : w === player ? 1 : -1;
         };
         let v1 = closedMorris();
         let v2 = numberOfMorrises();
