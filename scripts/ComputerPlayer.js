@@ -2,6 +2,7 @@
 
 import Cell from "./Cell.js";
 import CellState from "./CellState.js";
+import Player from "./Player.js";
 import Winner from "./Winner.js";
 
 export default class ComputerPlayer {
@@ -20,7 +21,7 @@ export default class ComputerPlayer {
         }
         if (maximizingPlayer === this.#player) {
             let value = -Infinity;
-            let childs = this.getAvailableMoves(node, maximizingPlayer, nextPlayer);
+            let childs = this.getAvailableMoves(node, maximizingPlayer);
             for (let child of childs) {
                 child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
                 value = Math.max(value, child.score);
@@ -33,7 +34,7 @@ export default class ComputerPlayer {
             return childs[index];
         } else {
             let value = Infinity;
-            let childs = this.getAvailableMoves(node, maximizingPlayer, nextPlayer);
+            let childs = this.getAvailableMoves(node, maximizingPlayer);
             for (let child of childs) {
                 child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
                 value = Math.min(value, child.score);
@@ -199,7 +200,7 @@ export default class ComputerPlayer {
         // console.log(`v1 = ${v1}, v2 = ${v2}, v3 = ${v3}, v4 = ${v4}, v5 = ${v5}, v6 = ${v6}, v7 = ${v7}, v8 = ${v8}, h = ${h}`);
         return h;
     }
-    getAvailableMoves({ game }, player, opponent) {
+    getAvailableMoves({ game }, player) {
         let moves = [];
         let board = game.getBoard();
         let poss;
@@ -246,7 +247,7 @@ export default class ComputerPlayer {
                 });
                 break;
             case "removePiece":
-                poss = game.availablePiecesToRemove(opponent);
+                poss = game.availablePiecesToRemove();
                 poss.forEach(c => {
                     let clone = game.clone();
                     clone.removePiece(c);
