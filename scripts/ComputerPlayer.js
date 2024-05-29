@@ -50,6 +50,9 @@ export default class ComputerPlayer {
     heuristic(node, player, opponent) {
         let { game, beginCell, endCell } = node;
         let cell = endCell ? endCell : beginCell;
+        if (cell === undefined) {
+            console.error(beginCell, endCell, game);
+        }
         let board = game.getBoard();
         let possibleMorris = () => {
             let rowPoss = () => {
@@ -104,17 +107,7 @@ export default class ComputerPlayer {
         let numberOfBlockedOpponentPieces = () => {
             let canMove = (cell) => {
                 let positions = game.orthogonalMoves(cell);
-                // let { x: or, y: oc } = cell;
-                // let COLS = board[0].length;
-                // let positions = [new Cell(or, oc + 1 >= COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? COLS - 1 : oc - 1)];
-                // if (oc % 2 !== 0) {
-                //     if (board[or + 1]) positions.push(new Cell(or + 1, oc));
-                //     if (board[or - 1]) positions.push(new Cell(or - 1, oc));
-                // }
-                if (positions.some(c => board[c.x][c.y] === CellState.EMPTY)) {
-                    return true;
-                }
-                return false;
+                return positions.some(c => board[c.x][c.y] === CellState.EMPTY);
             };
             let numberOfBlockedPieces = p => {
                 let count = 0;
@@ -229,16 +222,7 @@ export default class ComputerPlayer {
             case "move":
                 poss = board.flat().map((n, i) => n === player ? new Cell(Math.floor(i / COLS), i % COLS) : undefined).filter(n => n);
                 poss.forEach(c => {
-                    let { x: or, y: oc } = c;
-                    let positions = [new Cell(or, oc + 1 >= COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? COLS - 1 : oc - 1)];
-                    if (oc % 2 !== 0) {
-                        if (board[or + 1]) {
-                            positions.push(new Cell(or + 1, oc));
-                        }
-                        if (board[or - 1]) {
-                            positions.push(new Cell(or - 1, oc));
-                        }
-                    }
+                    let positions = game.orthogonalMoves(c);
                     positions = positions.filter(({ x, y }) => board[x][y] === CellState.EMPTY);
                     positions.forEach(emptyCell => {
                         let clone = game.clone();

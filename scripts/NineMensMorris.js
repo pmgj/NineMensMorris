@@ -189,10 +189,7 @@ export default class NineMensMorris {
     }
     #canMove(cell) {
         let positions = this.orthogonalMoves(cell);
-        if (positions.some(c => this.#board[c.x][c.y] === CellState.EMPTY)) {
-            return true;
-        }
-        return false;
+        return positions.some(c => this.#board[c.x][c.y] === CellState.EMPTY);
     }
     countRemainingPieces(cellState) {
         return this.#board.flat().filter(cs => cs === cellState).length;
