@@ -103,17 +103,8 @@ export default class ComputerPlayer {
         };
         let numberOfBlockedOpponentPieces = () => {
             let canMove = c => game.orthogonalMoves(c).some(c => board[c.x][c.y] === CellState.EMPTY);
-            let numberOfBlockedPieces = p => {
-                let count = 0;
-                for (let i = 0; i < board.length; i++) {
-                    for (let j = 0; j < board[i].length; j++) {
-                        if (board[i][j] === p && !canMove(new Cell(i, j))) {
-                            count++;
-                        }
-                    }
-                }
-                return count;
-            };
+            let COLS = board[0].length;
+            let numberOfBlockedPieces = p => board.flat().filter((cs, i) => cs === p && !canMove(new Cell(Math.floor(i / COLS), i % COLS))).length;
             return numberOfBlockedPieces(opponent) - numberOfBlockedPieces(player);
         };
         let numberOfPieces = () => game.countRemainingPieces(player) - game.countRemainingPieces(opponent);
