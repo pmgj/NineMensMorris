@@ -36,13 +36,13 @@ export default class NineMensMorris {
             case "removePiece":
                 return this.#state;
             case "move":
-                if (this.countRemainingPieces(this.#getCellState()) > 3) {
+                if (this.countRemainingPieces(this.getCellState()) > 3) {
                     return this.#state;
                 }
                 return "flying";
         }
     }
-    #getCellState() {
+    getCellState() {
         return this.#turn === Player.PLAYER1 ? CellState.PLAYER1 : CellState.PLAYER2;
     }
     getTurn() {
@@ -66,7 +66,7 @@ export default class NineMensMorris {
         if (this.#board[x][y] !== CellState.EMPTY) {
             throw new Error("This position is not empty.");
         }
-        this.#board[x][y] = this.#getCellState();
+        this.#board[x][y] = this.getCellState();
         this.#remainingPieces--;
         if (this.#checkMill(cell)) {
             this.#state = "removePiece";
@@ -105,7 +105,7 @@ export default class NineMensMorris {
             throw new Error("This cell is not on board.");
         }
         const { x, y } = cell;
-        let op = this.#getCellState();
+        let op = this.getCellState();
         if (this.#board[x][y] === op) {
             throw new Error("This position is not from the opponent.");
         }
@@ -156,7 +156,7 @@ export default class NineMensMorris {
         }
         let { x: or, y: oc } = beginCell;
         let { x: dr, y: dc } = endCell;
-        let piece = this.#getCellState();
+        let piece = this.getCellState();
         if (this.#board[or][oc] !== piece) {
             throw new Error("This piece is not from the current player.");
         }

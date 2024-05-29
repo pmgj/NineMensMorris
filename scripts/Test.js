@@ -244,7 +244,7 @@ function test4() {
 }
 function test5() {
     let nmm = new NineMensMorris();
-    let cp = new ComputerPlayer(CellState.PLAYER2), h;
+    let cp2 = new ComputerPlayer(CellState.PLAYER2), h, cp1 = new ComputerPlayer(CellState.PLAYER1);
     nmm.position(new Cell(0, 0));
     nmm.position(new Cell(1, 6));
     nmm.position(new Cell(0, 1));
@@ -267,7 +267,9 @@ function test5() {
     nmm.position(new Cell(2, 4));
     nmm.position(new Cell(2, 6));
     nmm.move(new Cell(0, 2), new Cell(0, 3));
-    h = cp.heuristic({ game: nmm, beginCell: new Cell(1, 1) }, CellState.PLAYER2, CellState.PLAYER1);
+    nmm.move(new Cell(2, 2), new Cell(2, 1));
+    // h = cp.heuristic({ game: nmm, beginCell: new Cell(1, 1) }, CellState.PLAYER1, CellState.PLAYER2);
+    console.log(cp1.alphabeta({ game: nmm }, 4, -Infinity, Infinity, CellState.PLAYER1));
     console.table(nmm.getBoard());
 }
 // test1();
