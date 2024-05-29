@@ -102,13 +102,25 @@ export default class ComputerPlayer {
             return countMorrises(player) - countMorrises(opponent);
         };
         let numberOfBlockedOpponentPieces = () => {
+            let canMove = (cell) => {
+                let positions = game.orthogonalMoves(cell);
+                // let { x: or, y: oc } = cell;
+                // let COLS = board[0].length;
+                // let positions = [new Cell(or, oc + 1 >= COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? COLS - 1 : oc - 1)];
+                // if (oc % 2 !== 0) {
+                //     if (board[or + 1]) positions.push(new Cell(or + 1, oc));
+                //     if (board[or - 1]) positions.push(new Cell(or - 1, oc));
+                // }
+                if (positions.some(c => board[c.x][c.y] === CellState.EMPTY)) {
+                    return true;
+                }
+                return false;
+            };
             let numberOfBlockedPieces = p => {
                 let count = 0;
                 for (let i = 0; i < board.length; i++) {
                     for (let j = 0; j < board[i].length; j++) {
-                        let prev = j - 1 < 0 ? board[i].length - 1 : j - 1;
-                        let next = j + 1 >= board[i].length ? 0 : j + 1;
-                        if (board[i][j] === p && board[i][prev] !== CellState.EMPTY && board[i][next] !== CellState.EMPTY) {
+                        if (board[i][j] === p && !canMove(new Cell(i, j))) {
                             count++;
                         }
                     }
@@ -197,7 +209,7 @@ export default class ComputerPlayer {
                 h = 16 * v1 + 10 * v5 + 1 * v6 + 1190 * v8;
                 break;
         }
-        // console.log(`v1 = ${v1}, v2 = ${v2}, v3 = ${v3}, v4 = ${v4}, v5 = ${v5}, v6 = ${v6}, v7 = ${v7}, v8 = ${v8}, h = ${h}`);
+        console.log(`v1 = ${v1}, v2 = ${v2}, v3 = ${v3}, v4 = ${v4}, v5 = ${v5}, v6 = ${v6}, v7 = ${v7}, v8 = ${v8}, h = ${h}`);
         return h;
     }
     getAvailableMoves({ game }, player) {

@@ -164,12 +164,8 @@ export default class NineMensMorris {
             throw new Error("This destination is not empty.");
         }
         if (this.countRemainingPieces(piece) > 3) {
-            let positions = [new Cell(or, oc + 1 >= this.#COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? this.#COLS - 1 : oc - 1)];
-            if (oc % 2 !== 0) {
-                positions.push(new Cell(or + 1 >= this.#ROWS ? 0 : or + 1, oc));
-                positions.push(new Cell(or - 1 < 0 ? this.#ROWS - 1 : or - 1, oc));
-            }
-            if (!positions.some(cell => this.#onBoard(cell) && cell.equals(endCell))) {
+            let positions = this.orthogonalMoves(beginCell);
+            if (!positions.some(cell => cell.equals(endCell))) {
                 throw new Error("This move is invalid.");
             }
         }
@@ -182,14 +178,18 @@ export default class NineMensMorris {
         this.#turn = this.#turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         return this.isGameOver();
     }
-    #canMove(cell) {
+    orthogonalMoves(cell) {
         let { x: or, y: oc } = cell;
         let positions = [new Cell(or, oc + 1 >= this.#COLS ? 0 : oc + 1), new Cell(or, oc - 1 < 0 ? this.#COLS - 1 : oc - 1)];
         if (oc % 2 !== 0) {
-            positions.push(new Cell(or + 1 >= this.#ROWS ? 0 : or + 1, oc));
-            positions.push(new Cell(or - 1 < 0 ? this.#ROWS - 1 : or - 1, oc));
+            if (this.#board[or + 1]) positions.push(new Cell(or + 1, oc));
+            if (this.#board[or - 1]) positions.push(new Cell(or - 1, oc));
         }
-        if (positions.some(c => this.#onBoard(c) && this.#board[c.x][c.y] === CellState.EMPTY)) {
+        return positions;
+    }
+    #canMove(cell) {
+        let positions = this.orthogonalMoves(cell);
+        if (positions.some(c => this.#board[c.x][c.y] === CellState.EMPTY)) {
             return true;
         }
         return false;
@@ -198,7 +198,7 @@ export default class NineMensMorris {
         return this.#board.flat().filter(cs => cs === cellState).length;
     }
     playerCanMove(cellState) {
-        if (this.countRemainingPieces(cellState) === 3) {
+        if (this.#state === "move" && this.countRemainingPieces(cellState) === 3) {
             return true;
         }
         for (let i = 0; i < this.#ROWS; i++) {

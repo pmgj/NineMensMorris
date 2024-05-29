@@ -250,7 +250,7 @@ function test5() {
     nmm.position(new Cell(0, 1));
     nmm.position(new Cell(2, 2));
     nmm.position(new Cell(0, 7));
-    h = cp.heuristic({ game: nmm, beginCell: new Cell(0, 7) });
+    // h = cp.heuristic({ game: nmm, beginCell: new Cell(0, 7) }, CellState.PLAYER2, CellState.PLAYER1);
     nmm.position(new Cell(2, 0));
     nmm.position(new Cell(0, 6));
     nmm.removePiece(new Cell(2, 0));
@@ -260,7 +260,14 @@ function test5() {
     nmm.position(new Cell(2, 0));
     nmm.position(new Cell(1, 4));
     nmm.position(new Cell(1, 0));
-    h = cp.heuristic({ game: nmm, beginCell: new Cell(0, 7) });
+    nmm.position(new Cell(1, 1));
+    nmm.position(new Cell(1, 2));
+    nmm.position(new Cell(1, 3));
+    nmm.position(new Cell(1, 5));
+    nmm.position(new Cell(2, 4));
+    nmm.position(new Cell(2, 6));
+    nmm.move(new Cell(0, 2), new Cell(0, 3));
+    h = cp.heuristic({ game: nmm, beginCell: new Cell(1, 1) }, CellState.PLAYER2, CellState.PLAYER1);
     console.table(nmm.getBoard());
 }
 // test1();
