@@ -49,9 +49,6 @@ export default class ComputerPlayer {
     heuristic(node, player, opponent) {
         let { game, beginCell, endCell } = node;
         let cell = endCell ? endCell : beginCell;
-        if (cell === undefined) {
-            console.error(beginCell, endCell, game);
-        }
         let board = game.getBoard();
         let possibleMorris = () => {
             let rowPoss = () => {
@@ -178,13 +175,13 @@ export default class ComputerPlayer {
                 h = 18 * v1 + 26 * v2 + 1 * v3 + 9 * v4 + 10 * v5 + 7 * v6;
                 break;
             case "move":
-                h = 14 * v1 + 43 * v2 + 10 * v3 + 11 * v4 + 8 * v7 + 1086 * v8;
+                h = 90 * v1 + 1 * v2 + 1 * v3 + 1 * v4 + 1 * v7 + 1086 * v8;
                 break;
             case "flying":
                 h = 16 * v1 + 10 * v5 + 1 * v6 + 1190 * v8;
                 break;
         }
-        console.log(`v1 = ${v1}, v2 = ${v2}, v3 = ${v3}, v4 = ${v4}, v5 = ${v5}, v6 = ${v6}, v7 = ${v7}, v8 = ${v8}, h = ${h}`);
+        // console.log(`v1 = ${v1}, v2 = ${v2}, v3 = ${v3}, v4 = ${v4}, v5 = ${v5}, v6 = ${v6}, v7 = ${v7}, v8 = ${v8}, h = ${h}`);
         return h;
     }
     getAvailableMoves({ game }) {

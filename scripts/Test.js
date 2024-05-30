@@ -269,6 +269,9 @@ function test5() {
     nmm.move(new Cell(0, 2), new Cell(0, 3));
     nmm.move(new Cell(2, 2), new Cell(2, 1));
     // h = cp.heuristic({ game: nmm, beginCell: new Cell(1, 1) }, CellState.PLAYER1, CellState.PLAYER2);
+    // nmm.move(new Cell(0, 1), new Cell(0, 2));
+    // nmm.move(new Cell(0, 3), new Cell(0, 2));
+    // h = cp1.heuristic({ game: nmm, beginCell: new Cell(0, 2) }, CellState.PLAYER1, CellState.PLAYER2);
     console.log(cp1.alphabeta({ game: nmm }, 4, -Infinity, Infinity, CellState.PLAYER1));
     console.table(nmm.getBoard());
 }
