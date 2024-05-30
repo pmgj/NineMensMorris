@@ -3,6 +3,7 @@ import Cell from "./Cell.js";
 import Winner from "./Winner.js";
 import CellState from "./CellState.js";
 import ComputerPlayer from "./ComputerPlayer.js";
+import Player from "./Player.js";
 
 function test1() {
     let m = new NineMensMorris();
@@ -268,15 +269,41 @@ function test5() {
     nmm.position(new Cell(2, 6));
     nmm.move(new Cell(0, 2), new Cell(0, 3));
     nmm.move(new Cell(2, 2), new Cell(2, 1));
+    nmm.move(new Cell(0, 3), new Cell(0, 2));
+    nmm.removePiece(new Cell(1, 2));
+    nmm.move(new Cell(2, 6), new Cell(2, 5));
+    nmm.move(new Cell(1, 3), new Cell(1, 2));
+    nmm.move(new Cell(1, 6), new Cell(1, 7));
+    nmm.move(new Cell(0, 2), new Cell(0, 3));
+    nmm.move(new Cell(1, 5), new Cell(0, 5));
+    nmm.move(new Cell(0, 3), new Cell(0, 2));
+    nmm.removePiece(new Cell(1, 0));
+    nmm.move(new Cell(2, 1), new Cell(2, 2));
+    nmm.move(new Cell(1, 1), new Cell(1, 0));
+    nmm.move(new Cell(1, 7), new Cell(2, 7));
+    nmm.move(new Cell(0, 1), new Cell(1, 1));
+    nmm.removePiece(new Cell(2, 0));
+    nmm.move(new Cell(2, 7), new Cell(2, 6));
+    nmm.move(new Cell(1, 1), new Cell(0, 1));
+    nmm.removePiece(new Cell(2, 2));
+    nmm.move(new Cell(0, 5), new Cell(2, 1));
     // h = cp.heuristic({ game: nmm, beginCell: new Cell(1, 1) }, CellState.PLAYER1, CellState.PLAYER2);
-    // nmm.move(new Cell(0, 1), new Cell(0, 2));
-    // nmm.move(new Cell(0, 3), new Cell(0, 2));
-    // h = cp1.heuristic({ game: nmm, beginCell: new Cell(0, 2) }, CellState.PLAYER1, CellState.PLAYER2);
-    console.log(cp1.alphabeta({ game: nmm }, 4, -Infinity, Infinity, CellState.PLAYER1));
+    console.log(cp1.alphabeta({ game: nmm }, 4, -Infinity, Infinity));
     console.table(nmm.getBoard());
+}
+function test6() {
+    let nmm = new NineMensMorris();
+    let cp2 = new ComputerPlayer(CellState.PLAYER2), h;
+    let nmm2 = nmm.clone([[CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER2, CellState.EMPTY],
+    [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER1],
+    [CellState.PLAYER1, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER1, CellState.PLAYER1, CellState.PLAYER1, CellState.EMPTY]],
+        Player.PLAYER2, "move", 0);
+    console.table(nmm2.getBoard());
+    console.log(cp2.alphabeta({ game: nmm2 }, 4, -Infinity, Infinity));
 }
 // test1();
 // test2();
 // test3();
 // test4();
-test5();
+// test5();
+test6();

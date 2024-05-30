@@ -22,12 +22,12 @@ export default class NineMensMorris {
         this.#state = "position";
         this.#remainingPieces = 18;
     }
-    clone() {
+    clone(board = this.#board.map(arr => arr.slice()), turn = this.#turn, state = this.#state, remainingPieces = this.#remainingPieces) {
         let temp = new NineMensMorris();
-        temp.#board = this.#board.map(arr => arr.slice());
-        temp.#turn = this.#turn;
-        temp.#state = this.#state;
-        temp.#remainingPieces = this.#remainingPieces;
+        temp.#board = board;
+        temp.#turn = turn;
+        temp.#state = state;
+        temp.#remainingPieces = remainingPieces;
         return temp;
     }
     getState() {
