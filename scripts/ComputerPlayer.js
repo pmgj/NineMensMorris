@@ -12,17 +12,18 @@ export default class ComputerPlayer {
     #getOpponent(player) {
         return player === CellState.PLAYER1 ? CellState.PLAYER2 : CellState.PLAYER1;
     }
-    alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity, maximizingPlayer = CellState.PLAYER2) {
+    alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity) {
         let w = node.game.isGameOver();
-        let nextPlayer = this.#getOpponent(maximizingPlayer);
+        let maximizingPlayer = node.game.getCellState();
+        let minimizingPlayer = this.#getOpponent(maximizingPlayer);
         if (depth === 0 || w !== Winner.NONE) {
-            return { score: this.heuristic(node, maximizingPlayer, nextPlayer) };
+            return { score: this.heuristic(node, maximizingPlayer, minimizingPlayer) };
         }
         if (maximizingPlayer === this.#player) {
             let value = -Infinity;
             let childs = this.getAvailableMoves(node);
             for (let child of childs) {
-                child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
+                child.score = this.alphabeta(child, depth - 1, alfa, beta).score;
                 value = Math.max(value, child.score);
                 if (value > beta) {
                     break; /* β cutoff */
@@ -35,7 +36,7 @@ export default class ComputerPlayer {
             let value = Infinity;
             let childs = this.getAvailableMoves(node);
             for (let child of childs) {
-                child.score = this.alphabeta(child, depth - 1, alfa, beta, nextPlayer).score;
+                child.score = this.alphabeta(child, depth - 1, alfa, beta).score;
                 value = Math.min(value, child.score);
                 if (value < alfa) {
                     break; /* α cutoff */
@@ -175,7 +176,7 @@ export default class ComputerPlayer {
                 h = 18 * v1 + 26 * v2 + 1 * v3 + 9 * v4 + 10 * v5 + 7 * v6;
                 break;
             case "move":
-                h = 90 * v1 + 1 * v2 + 1 * v3 + 1 * v4 + 1 * v7 + 1086 * v8;
+                h = 14 * v1 +43 * v2 + 10 * v3 + 11 * v4 + 8 * v7 + 1086 * v8;
                 break;
             case "flying":
                 h = 16 * v1 + 10 * v5 + 1 * v6 + 1190 * v8;

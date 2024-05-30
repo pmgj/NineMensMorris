@@ -77,10 +77,6 @@ class GUI {
         imgToRemove.parentElement.removeChild(imgToRemove);
         return winner;
     }
-    #play3(cell) {
-        let winner = this.#play2(cell);
-        this.#showMessage(winner);
-    }
     #play2(cell) {
         let winner;
         try {
@@ -99,7 +95,7 @@ class GUI {
         } catch (ex) {
             this.#setMessage(`Erro: ${ex.message}`);
         }
-        return winner;
+        this.#showMessage(winner);
     }
     #showMessage(winner) {
         let writeMessage = () => {
@@ -130,23 +126,25 @@ class GUI {
                 break;
             case Winner.NONE:
                 writeMessage();
-                while (this.#game.getTurn() === Player.PLAYER2) {
-                    let obj = this.#computer.alphabeta({ game: this.#game });
-                    switch (this.#game.getState()) {
-                        case "position":
-                            winner = this.#innerPlay(obj.beginCell);
-                            break;
-                        case "removePiece":
-                            winner = this.#removePiece(obj.beginCell);
-                            break;
-                        case "move":
-                        case "flying":
-                            this.#lastPiece = obj.beginCell;
-                            this.#innerPlay(obj.endCell);
-                            break;
+                setTimeout(() => {
+                    while (this.#game.getTurn() === Player.PLAYER2) {
+                        let obj = this.#computer.alphabeta({ game: this.#game });
+                        switch (this.#game.getState()) {
+                            case "position":
+                                this.#innerPlay(obj.beginCell);
+                                break;
+                            case "removePiece":
+                                this.#removePiece(obj.beginCell);
+                                break;
+                            case "move":
+                            case "flying":
+                                this.#lastPiece = obj.beginCell;
+                                this.#innerPlay(obj.endCell);
+                                break;
+                        }
+                        writeMessage();
                     }
-                    writeMessage();
-                }
+                }, 2000);
                 break;
             default:
                 writeMessage();
