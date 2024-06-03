@@ -14,15 +14,10 @@ export default class ComputerPlayer {
     }
     alphabeta(node, depth = 2, alfa = -Infinity, beta = Infinity) {
         let w = node.game.isGameOver();
-        let maximizingPlayer = node.game.getCellState();
-        let minimizingPlayer = this.#getOpponent(maximizingPlayer);
-        if (depth === 0) {
-            return { score: this.heuristic(node, maximizingPlayer, minimizingPlayer) };
+        if (depth === 0 || w !== Winner.NONE) {
+            return { score: this.heuristic(node) };
         }
-        if (w !== Winner.NONE) {
-            return { score: this.heuristic(node, minimizingPlayer, maximizingPlayer) };
-        }
-        if (maximizingPlayer === this.#player) {
+        if (node.game.getCellState() === this.#player) {
             let value = -Infinity;
             let childs = this.getAvailableMoves(node);
             for (let child of childs) {
@@ -50,9 +45,11 @@ export default class ComputerPlayer {
             return childs[index];
         }
     }
-    heuristic(node, player, opponent) {
+    heuristic(node) {
         let { game, beginCell, endCell } = node;
         let cell = endCell ? endCell : beginCell;
+        let player = node.game.getCellState();
+        let opponent = this.#getOpponent(player);
         let board = game.getBoard();
         let possibleMorris = () => {
             let rowPoss = () => {

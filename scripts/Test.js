@@ -294,16 +294,26 @@ function test5() {
 function test6() {
     let nmm = new NineMensMorris();
     let cp2 = new ComputerPlayer(CellState.PLAYER2), h;
-    let nmm2 = nmm.clone([[CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER2, CellState.EMPTY],
-    [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER1],
-    [CellState.PLAYER1, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER1, CellState.PLAYER1, CellState.PLAYER1, CellState.EMPTY]],
+    let nmm2 = nmm.clone([
+        [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER2, CellState.EMPTY],
+        [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER1],
+        [CellState.PLAYER1, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER1, CellState.PLAYER1, CellState.PLAYER1, CellState.EMPTY]
+    ],
         Player.PLAYER2, "move", 0);
     console.table(nmm2.getBoard());
     console.log(cp2.alphabeta({ game: nmm2 }, 4, -Infinity, Infinity));
 }
-// test1();
-// test2();
-// test3();
-// test4();
-// test5();
-test6();
+function test7() {
+    let nmm = new NineMensMorris();
+    let cp2 = new ComputerPlayer(CellState.PLAYER1);
+    let nmm2 = nmm.clone([
+        [CellState.PLAYER2, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER1, CellState.PLAYER2, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER1],
+        [CellState.PLAYER1, CellState.PLAYER1, CellState.PLAYER2, CellState.PLAYER1, CellState.PLAYER2, CellState.PLAYER1, CellState.EMPTY, CellState.PLAYER2],
+        [CellState.PLAYER2, CellState.PLAYER1, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER1, CellState.PLAYER2, CellState.PLAYER1, CellState.EMPTY]
+    ],
+        Player.PLAYER1, "move", 0);
+    console.table(nmm2.getBoard());
+    console.log(cp2.alphabeta({ game: nmm2 }, 2, -Infinity, Infinity));
+    /* Best move: (2,2) -> (2,3) */
+}
+test7();
