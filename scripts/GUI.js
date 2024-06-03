@@ -13,9 +13,9 @@ class GUI {
     #computer
     constructor() {
         this.#points = [
-            [new Cell(40, 260), new Cell(40, 140), new Cell(40, 20), new Cell(160, 20), new Cell(280, 20), new Cell(280, 140), new Cell(280, 260), new Cell(160, 260)],
-            [new Cell(80, 220), new Cell(80, 140), new Cell(80, 60), new Cell(160, 60), new Cell(240, 60), new Cell(240, 140), new Cell(240, 220), new Cell(160, 220)],
-            [new Cell(120, 180), new Cell(120, 140), new Cell(120, 100), new Cell(160, 100), new Cell(200, 100), new Cell(200, 140), new Cell(200, 180), new Cell(160, 180)]
+            [new Cell(5, 245), new Cell(5, 125), new Cell(5, 5), new Cell(125, 5), new Cell(245, 5), new Cell(245, 125), new Cell(245, 245), new Cell(125, 245)],
+            [new Cell(45, 205), new Cell(45, 125), new Cell(45, 45), new Cell(125, 45), new Cell(205, 45), new Cell(205, 125), new Cell(205, 205), new Cell(125, 205)],
+            [new Cell(85, 165), new Cell(85, 125), new Cell(85, 85), new Cell(125, 85), new Cell(165, 85), new Cell(165, 125), new Cell(165, 165), new Cell(125, 165)]
         ];
         this.#COLS = 8;
         this.#game = new NineMensMorris();
@@ -35,7 +35,7 @@ class GUI {
                     let img = document.createElement("img");
                     img.src = `./images/${turn}.svg`;
                     let pointCell = this.#points[cell.x][cell.y];
-                    img.style.translate = `${pointCell.x - 310}px ${pointCell.y - 10}px`;
+                    img.style.translate = `${pointCell.x - 260}px ${pointCell.y - 10}px`;
                     img.dataset.pointX = cell.x;
                     img.dataset.pointY = cell.y;
                     img.onclick = () => this.#play2(new Cell(parseInt(img.dataset.pointX), parseInt(img.dataset.pointY)));
@@ -51,7 +51,7 @@ class GUI {
                     winner = this.#game.move(this.#lastPiece, cell);
                     let imgToMove = this.#getImage(this.#lastPiece);
                     let cellToMove = this.#points[cell.x][cell.y];
-                    imgToMove.style.translate = `${cellToMove.x - 310}px ${cellToMove.y - 10}px`;
+                    imgToMove.style.translate = `${cellToMove.x - 260}px ${cellToMove.y - 10}px`;
                     imgToMove.dataset.pointX = cell.x;
                     imgToMove.dataset.pointY = cell.y;
                     break;

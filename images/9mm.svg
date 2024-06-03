@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="300" height="300" version="1.1">
-   <g transform="translate(39.5,20.5)">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="250" height="250" version="1.1">
+   <g transform="translate(5,5)">
       <rect y="0" x="0" height="240" width="240" style="fill:#fff0c0" />
       <path
          d="M 0,0 H 240 V 240 H 0 V 0 M 40,40 H 200 V 200 H 40 V 40 M 80,80 H 160 V 160 H 80 V 80 M 0,120 H 80 M 120,0 V 80 M 160,120 H 240 M 120,160 V 240"
