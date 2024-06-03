@@ -21,7 +21,11 @@ export default class ComputerPlayer {
             let value = -Infinity;
             let childs = this.getAvailableMoves(node);
             for (let child of childs) {
-                child.score = this.alphabeta(child, depth - 1, alfa, beta).score;
+                let score = this.alphabeta(child, depth - 1, alfa, beta).score;
+                if (child.game.getCellState() === node.game.getCellState()) {
+                    score = -score;
+                }
+                child.score = score;
                 value = Math.max(value, child.score);
                 if (value > beta) {
                     break; /* β cutoff */
@@ -34,7 +38,11 @@ export default class ComputerPlayer {
             let value = Infinity;
             let childs = this.getAvailableMoves(node);
             for (let child of childs) {
-                child.score = this.alphabeta(child, depth - 1, alfa, beta).score;
+                let score = this.alphabeta(child, depth - 1, alfa, beta).score;
+                if (child.game.getCellState() === node.game.getCellState()) {
+                    score = -score;
+                }
+                child.score = score;
                 value = Math.min(value, child.score);
                 if (value < alfa) {
                     break; /* α cutoff */

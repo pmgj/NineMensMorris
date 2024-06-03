@@ -13,9 +13,9 @@ class GUI {
     #computer
     constructor() {
         this.#points = [
-            [new Cell(32, 272), new Cell(32, 152), new Cell(32, 32), new Cell(152, 32), new Cell(272, 32), new Cell(272, 152), new Cell(272, 272), new Cell(152, 272)],
-            [new Cell(72, 232), new Cell(72, 152), new Cell(72, 72), new Cell(152, 72), new Cell(232, 72), new Cell(232, 152), new Cell(232, 232), new Cell(152, 232)],
-            [new Cell(112, 192), new Cell(112, 152), new Cell(112, 112), new Cell(152, 112), new Cell(192, 112), new Cell(192, 152), new Cell(192, 192), new Cell(152, 192)]
+            [new Cell(40, 260), new Cell(40, 140), new Cell(40, 20), new Cell(160, 20), new Cell(280, 20), new Cell(280, 140), new Cell(280, 260), new Cell(160, 260)],
+            [new Cell(80, 220), new Cell(80, 140), new Cell(80, 60), new Cell(160, 60), new Cell(240, 60), new Cell(240, 140), new Cell(240, 220), new Cell(160, 220)],
+            [new Cell(120, 180), new Cell(120, 140), new Cell(120, 100), new Cell(160, 100), new Cell(200, 100), new Cell(200, 140), new Cell(200, 180), new Cell(160, 180)]
         ];
         this.#COLS = 8;
         this.#game = new NineMensMorris();

@@ -210,10 +210,10 @@ export default class NineMensMorris {
         if (this.countRemainingPieces(CellState.PLAYER2) < 3) {
             return Winner.PLAYER1;
         }
-        if (!this.playerCanMove(CellState.PLAYER1)) {
+        if (this.#turn === CellState.PLAYER1 && !this.playerCanMove(CellState.PLAYER1)) {
             return Winner.PLAYER2;
         }
-        if (!this.playerCanMove(CellState.PLAYER2)) {
+        if (this.#turn === CellState.PLAYER2 && !this.playerCanMove(CellState.PLAYER2)) {
             return Winner.PLAYER1;
         }
         return Winner.NONE;
