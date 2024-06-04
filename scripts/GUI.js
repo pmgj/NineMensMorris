@@ -35,7 +35,7 @@ class GUI {
                     let img = document.createElement("img");
                     img.src = `./images/${turn}.svg`;
                     let pointCell = this.#points[cell.x][cell.y];
-                    img.style.translate = `${pointCell.x - 260}px ${pointCell.y - 10}px`;
+                    img.style.translate = `${pointCell.x - 250 - 10}px ${pointCell.y - 10}px`;
                     img.dataset.pointX = cell.x;
                     img.dataset.pointY = cell.y;
                     img.onclick = () => this.#play2(new Cell(parseInt(img.dataset.pointX), parseInt(img.dataset.pointY)));
@@ -51,7 +51,7 @@ class GUI {
                     winner = this.#game.move(this.#lastPiece, cell);
                     let imgToMove = this.#getImage(this.#lastPiece);
                     let cellToMove = this.#points[cell.x][cell.y];
-                    imgToMove.style.translate = `${cellToMove.x - 260}px ${cellToMove.y - 10}px`;
+                    imgToMove.style.translate = `${cellToMove.x - 250 - 10}px ${cellToMove.y - 10}px`;
                     imgToMove.dataset.pointX = cell.x;
                     imgToMove.dataset.pointY = cell.y;
                     break;
