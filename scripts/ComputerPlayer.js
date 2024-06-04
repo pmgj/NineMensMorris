@@ -193,8 +193,10 @@ export default class ComputerPlayer {
         // console.log(`v1 = ${v1}, v2 = ${v2}, v3 = ${v3}, v4 = ${v4}, v5 = ${v5}, v6 = ${v6}, v7 = ${v7}, v8 = ${v8}, h = ${h}`);
         return h;
     }
-    getAvailableMoves({ game }) {
-        let player = game.getCellState()
+    getAvailableMoves(node) {
+        let { game, beginCell, endCell } = node;
+        let player = game.getCellState();
+        let cell = endCell ? endCell : beginCell;
         let moves = [];
         let board = game.getBoard();
         let poss;
@@ -235,7 +237,7 @@ export default class ComputerPlayer {
                 poss.forEach(c => {
                     let clone = game.clone();
                     clone.removePiece(c);
-                    moves.push({ game: clone, beginCell: c });
+                    moves.push({ game: clone, beginCell: cell ? cell : c });
                 });
                 break;
         }

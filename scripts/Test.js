@@ -142,6 +142,21 @@ function test3() {
     console.assert(h.beginCell.equals(new Cell(2, 7)), "Erro!");
     /* Best move: (2,7) */
 }
+function test4() {
+    let nmm = new NineMensMorris();
+    let cp2 = new ComputerPlayer(CellState.PLAYER2);
+    let nmm2 = nmm.clone([
+        [CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER1, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY],
+        [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY],
+        [CellState.PLAYER1, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER1, CellState.PLAYER1]
+    ],
+        Player.PLAYER2, "move", 0);
+    // console.table(nmm2.getBoard());
+    let h = cp2.alphabeta({ game: nmm2 }, 2, -Infinity, Infinity);
+    console.assert(h.beginCell.equals(new Cell(0, 0)) && h.endCell.equals(new Cell(0, 5)), "Erro!");
+    /* Best move: (0,0) to (0,5) */
+}
 test1();
 test2();
 test3();
+test4();

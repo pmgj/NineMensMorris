@@ -13,9 +13,9 @@ class GUI {
     #computer
     constructor() {
         this.#points = [
-            [new Cell(5, 245), new Cell(5, 125), new Cell(5, 5), new Cell(125, 5), new Cell(245, 5), new Cell(245, 125), new Cell(245, 245), new Cell(125, 245)],
-            [new Cell(45, 205), new Cell(45, 125), new Cell(45, 45), new Cell(125, 45), new Cell(205, 45), new Cell(205, 125), new Cell(205, 205), new Cell(125, 205)],
-            [new Cell(85, 165), new Cell(85, 125), new Cell(85, 85), new Cell(125, 85), new Cell(165, 85), new Cell(165, 125), new Cell(165, 165), new Cell(125, 165)]
+            [new Cell(15, 235), new Cell(15, 120), new Cell(15, 5), new Cell(130, 5), new Cell(245, 5), new Cell(245, 120), new Cell(245, 235), new Cell(130, 235)],
+            [new Cell(53, 197), new Cell(53, 120), new Cell(53, 45), new Cell(130, 45), new Cell(207, 45), new Cell(207, 120), new Cell(207, 195), new Cell(130, 197)],
+            [new Cell(92, 158), new Cell(92, 120), new Cell(92, 82), new Cell(130, 82), new Cell(168, 82), new Cell(168, 120), new Cell(168, 158), new Cell(130, 160)]
         ];
         this.#COLS = 8;
         this.#game = new NineMensMorris();
@@ -97,6 +97,10 @@ class GUI {
         }
         this.#showMessage(winner);
     }
+    #unregisterEvents() {
+        let board = document.querySelector("#board");
+        board.onclick = undefined;
+    }
     #showMessage(winner) {
         let writeMessage = () => {
             let messages = {
@@ -112,33 +116,38 @@ class GUI {
         switch (winner) {
             case Winner.PLAYER1:
                 this.#setMessage("Game over! White's win!");
+                this.#unregisterEvents();
                 break;
             case Winner.PLAYER2:
                 this.#setMessage("Game over! Black's win!");
+                this.#unregisterEvents();
                 break;
             case Winner.DRAW:
                 this.#setMessage("Game over! It's a draw!");
+                this.#unregisterEvents();
                 break;
             case Winner.NONE:
                 writeMessage();
                 setTimeout(() => {
+                    let w;
                     while (this.#game.getTurn() === Player.PLAYER2) {
                         let obj = this.#computer.alphabeta({ game: this.#game });
                         switch (this.#game.getState()) {
                             case "position":
-                                this.#innerPlay(obj.beginCell);
+                                w = this.#innerPlay(obj.beginCell);
                                 break;
                             case "removePiece":
-                                this.#removePiece(obj.beginCell);
+                                w = this.#removePiece(obj.beginCell);
                                 break;
                             case "move":
                             case "flying":
                                 this.#lastPiece = obj.beginCell;
-                                this.#innerPlay(obj.endCell);
+                                w = this.#innerPlay(obj.endCell);
                                 break;
                         }
                         writeMessage();
                     }
+                    this.#showMessage(w);
                 }, 2000);
                 break;
             default:
@@ -154,7 +163,7 @@ class GUI {
         message.textContent = msg;
     }
     registerEvents() {
-        let board = document.querySelector("main img");
+        let board = document.querySelector("#board");
         board.onclick = this.#play.bind(this);
         this.#showMessage();
     }

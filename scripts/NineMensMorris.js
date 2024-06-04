@@ -21,7 +21,7 @@ export default class NineMensMorris {
         this.#COLS = 8;
         this.#turn = Player.PLAYER1;
         this.#state = "position";
-        this.#remainingPieces = 8;
+        this.#remainingPieces = 18;
         this.MAX_MOVES = 10;
         this.#remainingMoves = this.MAX_MOVES;
     }
@@ -63,6 +63,9 @@ export default class NineMensMorris {
         return inLimit(x, this.#ROWS) && inLimit(y, this.#COLS);
     }
     position(cell) {
+        if (!cell) {
+            throw new Error("No cell as informed.");
+        }
         if (this.#state !== "position") {
             throw new Error(`Positioning piece now is invalid (current state: ${this.#state}).`);
         }
