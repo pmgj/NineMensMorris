@@ -10,6 +10,7 @@ export default class NineMensMorris {
     #turn
     #state
     #remainingPieces
+    #remainingMoves
     constructor() {
         this.#board = [
             [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY],
@@ -20,14 +21,17 @@ export default class NineMensMorris {
         this.#COLS = 8;
         this.#turn = Player.PLAYER1;
         this.#state = "position";
-        this.#remainingPieces = 18;
+        this.#remainingPieces = 8;
+        this.MAX_MOVES = 10;
+        this.#remainingMoves = this.MAX_MOVES;
     }
-    clone(board = this.#board.map(arr => arr.slice()), turn = this.#turn, state = this.#state, remainingPieces = this.#remainingPieces) {
+    clone(board = this.#board.map(arr => arr.slice()), turn = this.#turn, state = this.#state, remainingPieces = this.#remainingPieces, remainingMoves = this.#remainingMoves) {
         let temp = new NineMensMorris();
         temp.#board = board;
         temp.#turn = turn;
         temp.#state = state;
         temp.#remainingPieces = remainingPieces;
+        temp.#remainingMoves = remainingMoves;
         return temp;
     }
     getState() {
@@ -41,6 +45,9 @@ export default class NineMensMorris {
                 }
                 return "flying";
         }
+    }
+    getRemainingMoves() {
+        return this.#remainingMoves;
     }
     getCellState() {
         return this.#turn === Player.PLAYER1 ? CellState.PLAYER1 : CellState.PLAYER2;
@@ -168,6 +175,8 @@ export default class NineMensMorris {
             if (!positions.some(cell => cell.equals(endCell))) {
                 throw new Error("This move is invalid.");
             }
+        } else {
+            this.#remainingMoves--;
         }
         this.#board[dr][dc] = this.#board[or][oc];
         this.#board[or][oc] = CellState.EMPTY;
@@ -215,6 +224,9 @@ export default class NineMensMorris {
         }
         if (this.#turn === CellState.PLAYER2 && !this.playerCanMove(CellState.PLAYER2)) {
             return Winner.PLAYER1;
+        }
+        if (this.#remainingMoves <= 0) {
+            return Winner.DRAW;
         }
         return Winner.NONE;
     }

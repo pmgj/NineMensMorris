@@ -99,20 +99,15 @@ class GUI {
     }
     #showMessage(winner) {
         let writeMessage = () => {
-            let hint = `Position a piece in an empty space.`;
-            switch (this.#game.getState()) {
-                case "position":
-                    break;
-                case "removePiece":
-                    hint = `Remove an opponent's piece.`;
-                    break;
-                case "move":
-                case "flying":
-                    hint = `Move your piece.`;
-                    break;
-            }
+            let messages = {
+                'position': `Position a piece in an empty space.`,
+                'removePiece': `Remove an opponent's piece.`,
+                'move': `Move your piece.`,
+                'flying': `Move your piece.`
+            };
             let turn = this.#game.getTurn() === Player.PLAYER1 ? "White's turn." : "Black's turn.";
-            this.#setMessage(`${turn} ${hint}`);
+            let rm = this.#game.getRemainingMoves() === this.#game.MAX_MOVES ? "" : `There are ${this.#game.getRemainingMoves()} remaining moves.`;
+            this.#setMessage(`${turn} ${messages[this.#game.getState()]} ${rm}`);
         };
         switch (winner) {
             case Winner.PLAYER1:
