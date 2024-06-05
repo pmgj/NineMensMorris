@@ -131,7 +131,7 @@ class GUI {
                 setTimeout(() => {
                     let w;
                     while (this.#game.getTurn() === Player.PLAYER2) {
-                        let obj = this.#computer.alphabeta({ game: this.#game });
+                        let obj = this.#computer.alphabeta({ game: this.#game }, 4);
                         switch (this.#game.getState()) {
                             case "position":
                                 w = this.#innerPlay(obj.beginCell);

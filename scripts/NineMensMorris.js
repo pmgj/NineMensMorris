@@ -17,8 +17,8 @@ export default class NineMensMorris {
             [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY],
             [CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY]
         ];
-        this.#ROWS = 3;
-        this.#COLS = 8;
+        this.#ROWS = this.#board.length;
+        this.#COLS = this.#board[0].length;
         this.#turn = Player.PLAYER1;
         this.#state = "position";
         this.#remainingPieces = 18;

@@ -156,7 +156,54 @@ function test4() {
     console.assert(h.beginCell.equals(new Cell(0, 0)) && h.endCell.equals(new Cell(0, 5)), "Erro!");
     /* Best move: (0,0) to (0,5) */
 }
+function test5() {
+    let nmm = new NineMensMorris();
+    let cp2 = new ComputerPlayer(CellState.PLAYER2);
+    let nmm2 = nmm.clone([
+        [CellState.PLAYER2, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER1, CellState.PLAYER2, CellState.EMPTY, CellState.EMPTY],
+        [CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER1, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER2],
+        [CellState.PLAYER1, CellState.PLAYER2, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER1]
+    ],
+        Player.PLAYER2, "move", 0);
+    // console.table(nmm2.getBoard());
+    let h = cp2.alphabeta({ game: nmm2 }, 2, -Infinity, Infinity);
+    console.assert(h.beginCell.equals(new Cell(1, 4)) && h.endCell.equals(new Cell(1, 3)), "Erro!");
+    /* Best move: (1,4) to (1,3) */
+}
+function test6() {
+    let nmm = new NineMensMorris();
+    let cp2 = new ComputerPlayer(CellState.PLAYER2);
+    let nmm2 = nmm.clone([
+        [CellState.PLAYER2, CellState.PLAYER2, CellState.PLAYER2, CellState.PLAYER1, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER1],
+        [CellState.PLAYER1, CellState.EMPTY, CellState.PLAYER1, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER2],
+        [CellState.PLAYER1, CellState.EMPTY, CellState.PLAYER1, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.PLAYER1, CellState.PLAYER1]
+    ],
+        Player.PLAYER2, "move", 0);
+    // console.table(nmm2.getBoard());
+    let h = cp2.alphabeta({ game: nmm2 }, 4, -Infinity, Infinity);
+    // console.log(h);
+    console.assert(h.beginCell.equals(new Cell(0, 1)) && h.endCell.equals(new Cell(1, 1)), "Erro!");
+    /* Best move: (0,1) to (1,1) */
+}
+function test7() {
+    let nmm = new NineMensMorris();
+    let cp2 = new ComputerPlayer(CellState.PLAYER2);
+    let nmm2 = nmm.clone([
+        [CellState.PLAYER1, CellState.PLAYER2, CellState.PLAYER1, CellState.EMPTY, CellState.PLAYER1, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2],
+        [CellState.PLAYER2, CellState.PLAYER2, CellState.PLAYER2, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER1],
+        [CellState.EMPTY, CellState.PLAYER2, CellState.EMPTY, CellState.PLAYER1, CellState.EMPTY, CellState.EMPTY, CellState.PLAYER1, CellState.PLAYER1]
+    ],
+        Player.PLAYER2, "move", 0);
+    // console.table(nmm2.getBoard());
+    let h = cp2.alphabeta({ game: nmm2 }, 2, -Infinity, Infinity);
+    // console.log(h);
+    console.assert(h.beginCell.equals(new Cell(1, 5)) && h.endCell.equals(new Cell(1, 4)), "Erro!");
+    /* Best move: (1,5) to (1,4) */
+}
 test1();
 test2();
 test3();
 test4();
+test5();
+test6();
+test7();
