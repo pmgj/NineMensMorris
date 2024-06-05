@@ -64,7 +64,7 @@ export default class NineMensMorris {
     }
     position(cell) {
         if (!cell) {
-            throw new Error("No cell as informed.");
+            throw new Error("No cell was informed.");
         }
         if (this.#state !== "position") {
             throw new Error(`Positioning piece now is invalid (current state: ${this.#state}).`);
@@ -108,6 +108,9 @@ export default class NineMensMorris {
         return mills;
     }
     removePiece(cell) {
+        if (!cell) {
+            throw new Error("No cell was informed.");
+        }
         if (this.#state !== "removePiece") {
             throw new Error(`Removing a piece now is invalid (current state: ${this.#state}).`);
         }
@@ -158,6 +161,9 @@ export default class NineMensMorris {
         return false;
     }
     move(beginCell, endCell) {
+        if (!beginCell || !endCell) {
+            throw new Error("No cell was informed.");
+        }
         if (this.#state !== "move") {
             throw new Error(`Removing a piece now is invalid (current state: ${this.#state}).`);
         }
