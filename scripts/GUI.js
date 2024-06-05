@@ -74,7 +74,8 @@ class GUI {
     #removePiece(cell) {
         let winner = this.#game.removePiece(cell);
         let imgToRemove = this.#getImage(cell);
-        imgToRemove.parentElement.removeChild(imgToRemove);
+        let anim = imgToRemove.animate([{ opacity: 1 }, { opacity: 0 }], 1000);
+        anim.onfinish = () => imgToRemove.parentElement.removeChild(imgToRemove);
         return winner;
     }
     #play2(cell) {
@@ -130,7 +131,7 @@ class GUI {
                 writeMessage();
                 setTimeout(() => {
                     let w;
-                    while (this.#game.getTurn() === Player.PLAYER2) {
+                    if (this.#game.getTurn() === Player.PLAYER2) {
                         let obj = this.#computer.alphabeta({ game: this.#game }, 4);
                         switch (this.#game.getState()) {
                             case "position":
@@ -145,7 +146,7 @@ class GUI {
                                 w = this.#innerPlay(obj.endCell);
                                 break;
                         }
-                        writeMessage();
+                        // writeMessage();
                     }
                     this.#showMessage(w);
                 }, 2000);

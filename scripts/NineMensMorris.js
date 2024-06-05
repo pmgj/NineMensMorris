@@ -191,7 +191,7 @@ export default class NineMensMorris {
         this.#board[or][oc] = CellState.EMPTY;
         if (this.#checkMill(endCell)) {
             this.#state = "removePiece";
-            return;
+            return Winner.NONE;
         }
         this.#turn = this.#turn === Player.PLAYER1 ? Player.PLAYER2 : Player.PLAYER1;
         return this.isGameOver();

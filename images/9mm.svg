@@ -3,6 +3,9 @@
       circle {
       r: 5;
       }
+      circle:hover {
+      fill: red;
+      }
    </style>
    <rect y="5" x="5" height="240" width="240" style="fill:#fff0c0" />
    <path

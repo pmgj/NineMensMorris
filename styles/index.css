@@ -11,4 +11,5 @@ main {
 img:not(:first-child) {
     position: absolute;
     transition: translate 1s;
+    animation-fill-mode: backwards;
 }
